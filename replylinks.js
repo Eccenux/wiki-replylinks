@@ -83,7 +83,7 @@ function addReplyLinks()
 	//
 	// When to run this...
 	//
-	if (false)	// always
+	if (!document.getElementById('t-permalink'))	// almost always
 		return;
 
 	var i;
