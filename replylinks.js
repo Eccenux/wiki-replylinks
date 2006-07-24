@@ -144,13 +144,17 @@ function addReplyLinks()
 			secAbove = new Object;
 			secAbove.id = a[i].name;
 			// going to header element text
-			if (a[i].parentNode.nextSibling.nextSibling.tagName == 'H2')
+			var header;
+			if (a[i].parentNode.nextSibling.nodeType == document.TEXT_NODE)
 				// FF
-				secAbove.text = a[i].parentNode.nextSibling.nextSibling.innerHTML
+				header = a[i].parentNode.nextSibling.nextSibling
 			else
 				// IE
-				secAbove.text = a[i].parentNode.nextSibling.innerHTML
+				header = a[i].parentNode.nextSibling
 			;
+			// sometimes there could be a link in the header (maybe some more)
+			secAbove.text = stripHtmlTags(header.innerHTML);
+			// 
 			//alert(a[i].parentNode.nextSibling.innerHTML);
 			//alert(secAbove.text);
 //			printDebug ('<li>' + secAbove.text + '</li>');
@@ -179,6 +183,20 @@ function insertAfterGivenElement(el, newEl) {
 	{
 		el.parentNode.appendChild(newEl);
 	}
+}
+
+/* ===================================================== *\
+	Function: stripHtmlTags
+	
+	Stripping HTML tags from the HTML text.
+	Returns stripped text.
+	
+	Params
+	------
+		html - the html text
+\* ===================================================== */
+function stripHtmlTags(html){
+	return html.replace(/<\S[^<>]*>/g, ''); // with global match (all will be replaced)
 }
 
 // </pre>
