@@ -1,19 +1,19 @@
 // <pre>
 /* ======================================================================== *\
-        Reply links with relation links
+	Reply links with relation links
 	
 	+ adding reply links near user links
 	+ inserting text given in newsectionname param (as PHP param in the location string of the page)
-
+	
 	Problemy:
 	* nie działa dla IE (błędy kodowania niektórych znaków UTF-8)
 	Problems:
 	* not working well with IE (encoding bugs with UTF-8 special chars)
-        
-        version:        0.1
-        copyright:      (C) 2006 Maciej Jaros (pl:User:Nux, en:User:EcceNux)
-        licence:        GNU General Public License v2,
-                                http://opensource.org/licenses/gpl-license.php
+	
+	version:		0.1
+	copyright:		(C) 2006 Maciej Jaros (pl:User:Nux, en:User:EcceNux)
+	licence:		GNU General Public License v2,
+					http://opensource.org/licenses/gpl-license.php
 \* ======================================================================== */
 addOnloadHook(autoNewSectionName);
 addOnloadHook(addReplyLinks);
@@ -70,6 +70,10 @@ function autoNewSectionName()
 	
 	Adding reply links near user links.
 	
+	Problemy:
+	* nie działa dla IE (błędy kodowania UTF-8)
+	* lista linków jest dynamiczna i wszystko się kaszani...
+	
 	Params
 	------
 		none
@@ -112,8 +116,8 @@ function addReplyLinks()
 					//
 					// creating reply href
 					// var userName = matches[1];
-					//var hrefReply = hrefUserTalkSpaced + matches[1] + '?action=edit&section=new';
-			var hrefReply = hrefUserTalkSpaced + '?action=edit&section=new';
+					var hrefReply = hrefUserTalkSpaced + matches[1] + '?action=edit&section=new';
+//			var hrefReply = hrefUserTalkSpaced + '?action=edit&section=new';
 //			printDebug ('<li>pre: ' + a.length);
 					//
 					// and now to create and add data for the new reply section name
