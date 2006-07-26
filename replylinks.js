@@ -101,7 +101,7 @@ function addReplyLinks()
 	//
 	// getting first header name for default tags
 	var secAbove = new Object;
-	secAbove.id = a[i].name;
+	secAbove.id = 'bodyContent';
 	secAbove.text = stripHtmlTags(document.getElementById('bodyContent').getElementsByTagName('h1')[0].innerHTML);
 
 	//
