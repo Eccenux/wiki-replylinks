@@ -10,7 +10,7 @@
 	Problems:
 	* not working well with IE (encoding bugs with UTF-8 special chars)
 	
-	version:		0.1
+	version:		0.2
 	copyright:		(C) 2006 Maciej Jaros (pl:User:Nux, en:User:EcceNux)
 	licence:		GNU General Public License v2,
 					http://opensource.org/licenses/gpl-license.php
@@ -94,17 +94,23 @@ function addReplyLinks()
 	var hrefPermalink = document.getElementById('t-permalink').getElementsByTagName('a')[0].href;
 	
 	//
-	// Get some places to put this into
-	// get every link with href="http://pl.wikipedia.org/wiki/Wikipedysta:..." (no slashes in dots)
+	// Get some places to put this into and puting this
 	//
 	var reHref = new RegExp (hrefUserSpaced + "([^/]*)$", "i");	// with ignore case
 
-	var secAbove = false;
+	//
+	// getting first header name for default tags
+	var secAbove = new Object;
+	secAbove.id = a[i].name;
+	secAbove.text = stripHtmlTags(document.getElementById('bodyContent').getElementsByTagName('h1')[0].innerHTML);
+
+	//
+	// get every link with href="http://pl.wikipedia.org/wiki/Wikipedysta:..." (no slashes in dots)
 	var a = document.getElementById('bodyContent').getElementsByTagName('A');
 //	printDebug ('<ul>');
 	for (i = 0; i < a.length; i++) {
-		if (secAbove)
-		{
+//		if (secAbove)
+//		{
 //			printDebug ('<li>' + a[i].href + '</li>');
 			//
 			// checking if this is a user link
@@ -136,12 +142,11 @@ function addReplyLinks()
 //			printDebug ('</li>');
 				}
 			}
-		}
+//		}
 		//
 		// obtaining anchor and text of the section above user links
 		if (a[i].name != '')
 		{
-			secAbove = new Object;
 			secAbove.id = a[i].name;
 			// going to header element text
 			var header;
