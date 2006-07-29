@@ -10,7 +10,7 @@
 	Problems:
 	* not working well with IE (encoding bugs with UTF-8 special chars)
 	
-	version:		0.2
+	version:		0.3
 	copyright:		(C) 2006 Maciej Jaros (pl:User:Nux, en:User:EcceNux)
 	licence:		GNU General Public License v2,
 					http://opensource.org/licenses/gpl-license.php
@@ -72,7 +72,6 @@ function autoNewSectionName()
 	
 	Problemy:
 	* nie działa dla IE (błędy kodowania UTF-8)
-	* lista linków jest dynamiczna i wszystko się kaszani...
 	
 	Params
 	------
@@ -83,15 +82,23 @@ function addReplyLinks()
 	//
 	// When to run this...
 	//
-	if (!document.getElementById('t-permalink'))	// almost always
-		return;
+	if (!document.getElementById('t-permalink') && !document.getElementById('t-ispermalink') )	// almost always
+		return
+	;
 
 	var i;
 
 	//
 	// Get current page version link
 	//
-	var hrefPermalink = document.getElementById('t-permalink').getElementsByTagName('a')[0].href;
+	if (document.getElementById('t-ispermalink'))
+	{
+		var hrefPermalink = document.location.href;
+	}
+	else
+	{
+		var hrefPermalink = document.getElementById('t-permalink').getElementsByTagName('a')[0].href;
+	}
 	
 	//
 	// Get some places to put this into and puting this
