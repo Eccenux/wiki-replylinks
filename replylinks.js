@@ -1,3 +1,4 @@
+// Instrukcja: [[Wikipedia:Narzędzia/Odpowiedzi z linkami]]
 // <pre>
 /* ======================================================================== *\
 	Reply links with relation links
@@ -10,7 +11,7 @@
 	Problems:
 	* not working well with IE (encoding bugs with UTF-8 special chars)
 	
-	version:		0.3
+	version:		0.4
 	copyright:		(C) 2006 Maciej Jaros (pl:User:Nux, en:User:EcceNux)
 	licence:		GNU General Public License v2,
 					http://opensource.org/licenses/gpl-license.php
@@ -23,6 +24,8 @@ addOnloadHook(addReplyLinks);
 //
 var hrefUserSpaced = 'http://pl.wikipedia.org/wiki/Wikipedysta:';
 // en: 'http://en.wikipedia.org/wiki/User:';
+var hrefUserSpacedNew = 'http://pl.wikipedia.org/w/index.php\\?title=Wikipedysta:';
+// en: 'http://en.wikipedia.org/w/index.php\\?title=User:';
 var hrefUserTalkSpaced = 'http://pl.wikipedia.org/wiki/Dyskusja_Wikipedysty:';
 // en: 'http://en.wikipedia.org/wiki/User_talk:';
 var textReplyShort = 'Odp:';
@@ -104,7 +107,8 @@ function addReplyLinks()
 	// Get some places to put this into and puting this
 	//
 	var reHref = new RegExp (hrefUserSpaced + "([^/]*)$", "i");	// with ignore case
-
+	var reHrefNew = new RegExp (hrefUserSpacedNew + "([^/?&]*)", "i");	// with ignore case
+	
 	//
 	// getting first header name for default tags
 	var secAbove = new Object;
@@ -123,7 +127,14 @@ function addReplyLinks()
 			// checking if this is a user link
 			if (a[i].href != '')
 			{
-				var matches = reHref.exec(a[i].href);
+				if (a[i].className=='new')
+				{
+					var matches = reHrefNew.exec(a[i].href);
+				}
+				else
+				{
+					var matches = reHref.exec(a[i].href);
+				}
 				if (matches)
 				{
 					//
