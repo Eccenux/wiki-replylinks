@@ -1,4 +1,3 @@
-// Instrukcja: [[Wikipedia:Narzędzia/Odpowiedzi z linkami]]
 // <pre>
 /* ======================================================================== *\
 	Reply links with relation links
@@ -113,6 +112,7 @@ function addReplyLinks()
 	// getting first header name for default tags
 	var secAbove = new Object;
 	secAbove.id = 'bodyContent';
+document.getElemetnById('contentSub').innerHTML += document.getElementById('content').getElementsByTagName('H1')[0].innerHTML + '<br />';
 	secAbove.text = stripHtmlTags(document.getElementById('content').getElementsByTagName('H1')[0].innerHTML);
 
 	//
@@ -165,8 +165,11 @@ function addReplyLinks()
 		// obtaining anchor and text of the section above user links
 		if (a[i].name != '')
 		{
+document.getElemetnById('contentSub').innerHTML += '<hr />' + a[i].name + '<br />';
 			secAbove.id = a[i].name;
 			// going to header element text
+document.getElemetnById('contentSub').innerHTML += a[i].parentNode.nextSibling.nodeType + ',' + a[i].parentNode.nextSibling.nodeType.innerHTML + ';';
+document.getElemetnById('contentSub').innerHTML += a[i].parentNode.nextSibling.nextSibling.nodeType + ',' + a[i].parentNode.nextSibling.nodeType.innerHTML + ';';
 			var header;
 			if (a[i].parentNode.nextSibling.nodeType == document.TEXT_NODE)
 				// FF
