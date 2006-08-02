@@ -1,3 +1,4 @@
+// Instrukcja: [[Wikipedia:Narzędzia/Odpowiedzi z linkami]]
 // <pre>
 /* ======================================================================== *\
 	Reply links with relation links
