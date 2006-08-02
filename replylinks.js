@@ -10,7 +10,7 @@
 	Problems:
 	* not working well with IE (encoding bugs with UTF-8 special chars)
 	
-	version:		0.4
+	version:		0.5
 	copyright:		(C) 2006 Maciej Jaros (pl:User:Nux, en:User:EcceNux)
 	licence:		GNU General Public License v2,
 					http://opensource.org/licenses/gpl-license.php
@@ -124,7 +124,7 @@ function addReplyLinks()
 //			printDebug ('<li>' + a[i].href + '</li>');
 			//
 			// checking if this is a user link
-			if (a[i].href != '')
+			if (a[i].href != '' && a[i].getAttribute('href').indexOf('#')==-1)
 			{
 				if (a[i].className=='new')
 				{
