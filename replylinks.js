@@ -168,8 +168,8 @@ document.getElementById('contentSub').innerHTML += document.getElementById('cont
 document.getElementById('contentSub').innerHTML += '<hr />' + a[i].name + '<br />';
 			secAbove.id = a[i].name;
 			// going to header element text
-document.getElementById('contentSub').innerHTML += a[i].parentNode.nextSibling.nodeType + ',' + a[i].parentNode.nextSibling.nodeType.innerHTML + ';';
-document.getElementById('contentSub').innerHTML += a[i].parentNode.nextSibling.nextSibling.nodeType + ',' + a[i].parentNode.nextSibling.nodeType.innerHTML + ';';
+document.getElementById('contentSub').innerHTML += a[i].parentNode.nextSibling.nodeType + ',' + a[i].parentNode.nextSibling.innerHTML + ',' + a[i].parentNode.nextSibling.nodeValue + ';';
+document.getElementById('contentSub').innerHTML += a[i].parentNode.nextSibling.nextSibling.nodeType + ',' + a[i].parentNode.nextSibling.nextSibling.innerHTML + ',' + a[i].parentNode.nextSibling.nextSibling.nodeValue + ';';
 			var header;
 			if (a[i].parentNode.nextSibling.nodeType == document.TEXT_NODE)
 				// FF
