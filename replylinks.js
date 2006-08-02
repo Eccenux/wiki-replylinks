@@ -175,7 +175,7 @@ function addReplyLinks()
 				header = a[i].parentNode.nextSibling
 			;
 			// check if this is the right element - if not skip
-			if (header.nodeTyp == document.ELEMENT_NODE)
+			if (header.nodeType == document.ELEMENT_NODE)
 			{
 				secAbove.id = a[i].name;
 				// sometimes there could be a link in the header (maybe some more)
