@@ -112,7 +112,6 @@ function addReplyLinks()
 	// getting first header name for default tags
 	var secAbove = new Object;
 	secAbove.id = 'bodyContent';
-document.getElementById('contentSub').innerHTML += document.getElementById('content').getElementsByTagName('H1')[0].innerHTML + '<br />';
 	secAbove.text = stripHtmlTags(document.getElementById('content').getElementsByTagName('H1')[0].innerHTML);
 
 	//
@@ -165,11 +164,7 @@ document.getElementById('contentSub').innerHTML += document.getElementById('cont
 		// obtaining anchor and text of the section above user links
 		if (a[i].name != '')
 		{
-document.getElementById('contentSub').innerHTML += '<hr />' + a[i].name + '<br />';
-			secAbove.id = a[i].name;
 			// going to header element text
-document.getElementById('contentSub').innerHTML += a[i].parentNode.nextSibling.nodeType + ',' + a[i].parentNode.nextSibling.innerHTML + ',' + a[i].parentNode.nextSibling.nodeValue + ';';
-document.getElementById('contentSub').innerHTML += a[i].parentNode.nextSibling.nextSibling.nodeType + ',' + a[i].parentNode.nextSibling.nextSibling.innerHTML + ',' + a[i].parentNode.nextSibling.nextSibling.nodeValue + ';';
 			var header;
 			if (a[i].parentNode.nextSibling.nodeType == document.TEXT_NODE)
 				// FF
@@ -178,12 +173,14 @@ document.getElementById('contentSub').innerHTML += a[i].parentNode.nextSibling.n
 				// IE
 				header = a[i].parentNode.nextSibling
 			;
-			// sometimes there could be a link in the header (maybe some more)
-			secAbove.text = stripHtmlTags(header.innerHTML);
-			// 
-			//alert(a[i].parentNode.nextSibling.innerHTML);
-			//alert(secAbove.text);
-//			printDebug ('<li>' + secAbove.text + '</li>');
+			// check if this is the right element - if not skip
+			if (header.nodeTyp == document.ELEMENT_NODE)
+			{
+				secAbove.id = a[i].name;
+				// sometimes there could be a link in the header (maybe some more)
+				secAbove.text = stripHtmlTags(header.innerHTML);
+//				printDebug ('<li>' + secAbove.text + '</li>');
+			}
 		}
 	}
 //	printDebug ('</ul>');
