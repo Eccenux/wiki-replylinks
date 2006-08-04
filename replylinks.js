@@ -115,7 +115,7 @@ function addReplyLinks()
 	secAbove.id = 'bodyContent';
 	secAbove.text = stripHtmlTags(document.getElementById('content').getElementsByTagName('H1')[0].innerHTML);
 	// replace cut anything in brackets []
-	secAbove.text = secAbove.text.replace('\[[^\]]*\]','');
+	secAbove.text = secAbove.text.replace(/\[[^\]]*\]/,'');
 
 	//
 	// get every link with href="http://pl.wikipedia.org/wiki/Wikipedysta:..." (no slashes in dots)
