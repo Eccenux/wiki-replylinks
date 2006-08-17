@@ -11,7 +11,7 @@
 	Problems:
 	* not working well with IE (encoding bugs with UTF-8 special chars)
 	
-	version:		0.5b
+	version:		0.6.0
 	copyright:		(C) 2006 Maciej Jaros (pl:User:Nux, en:User:EcceNux)
 	licence:		GNU General Public License v2,
 					http://opensource.org/licenses/gpl-license.php
@@ -30,6 +30,8 @@ var hrefUserTalkSpaced = 'http://pl.wikipedia.org/wiki/Dyskusja_Wikipedysty:';
 // en: 'http://en.wikipedia.org/wiki/User_talk:';
 var textReplyShort = 'Odp:';
 // en: 'Re:';
+var textNoHeadShort = 'Ad:';
+// en: 'Ad:';
 var textReplyLinkName = 'odp';
 // en: 'reply';
 
@@ -116,7 +118,7 @@ function addReplyLinks()
 	secAbove.text = stripHtmlTags(document.getElementById('content').getElementsByTagName('H1')[0].innerHTML);
 	// replace cut anything in brackets []
 	secAbove.text = secAbove.text.replace(/\[[^\]]*\]/,'');
-
+	var secReplyText = textNoHeadShort;
 	//
 	// get every link with href="http://pl.wikipedia.org/wiki/Wikipedysta:..." (no slashes in dots)
 	var a = document.getElementById('bodyContent').getElementsByTagName('A');
@@ -147,7 +149,7 @@ function addReplyLinks()
 //			printDebug ('<li>pre: ' + a.length);
 					//
 					// and now to create and add data for the new reply section name
-					var newSectionName = '['+hrefPermalink+'#'+secAbove.id+' '+textReplyShort+secAbove.text+']';
+					var newSectionName = '['+hrefPermalink+'#'+secAbove.id+' '+secReplyText+secAbove.text+']';
 					hrefReply += '&newsectionname=' + escape(newSectionName);
 					var newSup = document.createElement('SUP');
 					var newA = document.createElement('A');
@@ -183,6 +185,8 @@ function addReplyLinks()
 				// sometimes there could be a link in the header (maybe some more)
 				secAbove.text = stripHtmlTags(header.innerHTML);
 //				printDebug ('<li>' + secAbove.text + '</li>');
+				// should be set only once (as it is always the same), but let's leave it that way
+				secReplyText = textReplyShort;
 			}
 		}
 	}
