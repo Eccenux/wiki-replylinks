@@ -114,7 +114,7 @@ function addReplyLinks()
 	//
 	var reHref = new RegExp (hrefUserSpaced + "([^/]*)$", "i");	// with ignore case
 	var reHrefNew = new RegExp (hrefUserSpacedNew + "([^/?&]*)", "i");	// with ignore case
-	var reHrefAnonim = new RegExp (hrefUserAnonim + "(.*)$");
+	var reHrefAnonim = new RegExp (hrefUserAnonim + "([\.0-9]*)$");
 	
 	//
 	// getting first header name for default tags
