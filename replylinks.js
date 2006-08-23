@@ -11,7 +11,7 @@
 	Problems:
 	* not working well with IE (encoding bugs with UTF-8 special chars)
 	
-	version:		0.6.0
+	version:		0.7.0
 	copyright:		(C) 2006 Maciej Jaros (pl:User:Nux, en:User:EcceNux)
 	licence:		GNU General Public License v2,
 					http://opensource.org/licenses/gpl-license.php
@@ -22,12 +22,16 @@ addOnloadHook(addReplyLinks);
 //
 // Settings
 //
-var hrefUserSpaced = 'http://pl.wikipedia.org/wiki/Wikipedysta:';
-// en: 'http://en.wikipedia.org/wiki/User:';
-var hrefUserSpacedNew = 'http://pl.wikipedia.org/w/index.php\\?title=Wikipedysta:';
-// en: 'http://en.wikipedia.org/w/index.php\\?title=User:';
-var hrefUserTalkSpaced = 'http://pl.wikipedia.org/wiki/Dyskusja_Wikipedysty:';
-// en: 'http://en.wikipedia.org/wiki/User_talk:';
+var hrefServerBase = 'http://pl.wikipedia.org';
+// en: 'http://en.wikipedia.org';
+var hrefUserAnonim = hrefServerBase + '/w/index.php\\?title=Specjalna:Contributions\\&target=';
+// en: '/w/index.php\\?title=Specjal:Contributions\\&target=';
+var hrefUserSpaced = hrefServerBase + '/wiki/Wikipedysta:';
+// en: '/wiki/User:';
+var hrefUserSpacedNew = hrefServerBase + '/w/index.php\\?title=Wikipedysta:';
+// en: '/w/index.php\\?title=User:';
+var hrefUserTalkSpaced = hrefServerBase + '/wiki/Dyskusja_Wikipedysty:';
+// en: '/wiki/User_talk:';
 var textReplyShort = 'Odp:';
 // en: 'Re:';
 var textNoHeadShort = 'Ad:';
@@ -110,6 +114,7 @@ function addReplyLinks()
 	//
 	var reHref = new RegExp (hrefUserSpaced + "([^/]*)$", "i");	// with ignore case
 	var reHrefNew = new RegExp (hrefUserSpacedNew + "([^/?&]*)", "i");	// with ignore case
+	var reHrefAnonim = new RegExp (hrefUserAnonim + "(.*)$");
 	
 	//
 	// getting first header name for default tags
@@ -139,6 +144,11 @@ function addReplyLinks()
 				{
 					var matches = reHref.exec(a[i].href);
 				}
+				if (!matches)
+				{
+					matches = reHrefAnonim.exec(a[i].href);
+				}
+
 				if (matches)
 				{
 					//
