@@ -11,7 +11,7 @@
 	Problems:
 	* not working well with IE (encoding bugs with UTF-8 special chars)
 	
-	version:		0.7.0
+	version:		0.7.1
 	copyright:		(C) 2006 Maciej Jaros (pl:User:Nux, en:User:EcceNux)
 	licence:		GNU General Public License v2,
 					http://opensource.org/licenses/gpl-license.php
@@ -161,13 +161,13 @@ function addReplyLinks()
 					// and now to create and add data for the new reply section name
 					var newSectionName = '['+hrefPermalink+'#'+secAbove.id+' '+secReplyText+secAbove.text+']';
 					hrefReply += '&newsectionname=' + escape(newSectionName);
-					var newSup = document.createElement('SUP');
+					var newEl = document.createElement('small');
 					var newA = document.createElement('A');
 					newA.setAttribute('href', hrefReply);
 					newA.setAttribute('title', textReplyShort+secAbove.text);
 					newA.appendChild(document.createTextNode('['+textReplyLinkName+']'))
-					newSup.appendChild(newA);
-					insertAfterGivenElement(a[i],newSup);
+					newEl.appendChild(newA);
+					insertAfterGivenElement(a[i],newEl);
 					i++;	// a is a dynamic list
 //			printDebug ('; aft: ' + a.length);
 //			printDebug ('; a[i+1].href: ' + a[i+1].href);
