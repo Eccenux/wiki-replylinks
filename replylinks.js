@@ -11,7 +11,7 @@
 	Problems:
 	* not working well with IE (encoding bugs with UTF-8 special chars)
 	
-	version:		0.7.1
+	version:		0.7.2
 	copyright:		(C) 2006 Maciej Jaros (pl:User:Nux, en:User:EcceNux)
 	licence:		GNU General Public License v2,
 					http://opensource.org/licenses/gpl-license.php
@@ -38,12 +38,6 @@ var textNoHeadShort = 'Ad:';
 // en: 'Ad:';
 var textReplyLinkName = 'odp';
 // en: 'reply';
-
-//
-// Test
-//
-// var hrefUserSpaced = location.protocol+'//'+location.host+'/wiki/Wikipedysta:';
-// var hrefUserTalkSpaced = 'talk.php';
 
 /* ===================================================== *\
 	Function: autoNewSectionName
@@ -127,11 +121,9 @@ function addReplyLinks()
 	//
 	// get every link with href="http://pl.wikipedia.org/wiki/Wikipedysta:..." (no slashes in dots)
 	var a = document.getElementById('bodyContent').getElementsByTagName('A');
-//	printDebug ('<ul>');
 	for (i = 0; i < a.length; i++) {
 //		if (secAbove)
 //		{
-//			printDebug ('<li>' + a[i].href + '</li>');
 			//
 			// checking if this is a user link
 			if (a[i].href != '' && a[i].getAttribute('href').indexOf('#')==-1)
@@ -155,8 +147,6 @@ function addReplyLinks()
 					// creating reply href
 					// var userName = matches[1];
 					var hrefReply = hrefUserTalkSpaced + matches[1] + '?action=edit&section=new';
-//			var hrefReply = hrefUserTalkSpaced + '?action=edit&section=new';
-//			printDebug ('<li>pre: ' + a.length);
 					//
 					// and now to create and add data for the new reply section name
 					var newSectionName = '['+hrefPermalink+'#'+secAbove.id+' '+secReplyText+secAbove.text+']';
@@ -169,9 +159,6 @@ function addReplyLinks()
 					newEl.appendChild(newA);
 					insertAfterGivenElement(a[i],newEl);
 					i++;	// a is a dynamic list
-//			printDebug ('; aft: ' + a.length);
-//			printDebug ('; a[i+1].href: ' + a[i+1].href);
-//			printDebug ('</li>');
 				}
 			}
 //		}
@@ -194,14 +181,11 @@ function addReplyLinks()
 				secAbove.id = a[i].name;
 				// sometimes there could be a link in the header (maybe some more)
 				secAbove.text = stripHtmlTags(header.innerHTML);
-//				printDebug ('<li>' + secAbove.text + '</li>');
 				// should be set only once (as it is always the same), but let's leave it that way
 				secReplyText = textReplyShort;
 			}
 		}
 	}
-//	printDebug ('</ul>');
-//	flushDebug ();
 }
 
 /* ===================================================== *\
