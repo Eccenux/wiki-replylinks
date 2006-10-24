@@ -11,7 +11,7 @@
 	Problems:
 	* not working well with IE (encoding bugs with UTF-8 special chars)
 	
-	version:		0.7.2
+	version:		0.7.3
 	copyright:		(C) 2006 Maciej Jaros (pl:User:Nux, en:User:EcceNux)
 	licence:		GNU General Public License v2,
 					http://opensource.org/licenses/gpl-license.php
@@ -114,7 +114,7 @@ function addReplyLinks()
 	// getting first header name for default tags
 	var secAbove = new Object;
 	secAbove.id = 'bodyContent';
-	secAbove.text = stripHtmlTags(document.getElementById('content').getElementsByTagName('H1')[0].innerHTML);
+	secAbove.text = stripHtmlTags(document.getElementById('content').getElementsByTagName('H1')[0].innerHTML.replace(/<span class="editsection">.*<\/span>/, ''));
 	// replace cut anything in brackets []
 	secAbove.text = secAbove.text.replace(/\[[^\]]*\]/,'');
 	var secReplyText = textNoHeadShort;
