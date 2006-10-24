@@ -114,7 +114,7 @@ function addReplyLinks()
 	// getting first header name for default tags
 	var secAbove = new Object;
 	secAbove.id = 'bodyContent';
-	secAbove.text = stripHtmlTags(document.getElementById('content').getElementsByTagName('H1')[0].innerHTML.replace(/<span class="editsection">.*<\/span>/, ''));
+	secAbove.text = stripHtmlTags(document.getElementById('content').getElementsByTagName('H1')[0].innerHTML);
 	// replace cut anything in brackets []
 	secAbove.text = secAbove.text.replace(/\[[^\]]*\]/,'');
 	var secReplyText = textNoHeadShort;
@@ -181,6 +181,8 @@ function addReplyLinks()
 				secAbove.id = a[i].name;
 				// sometimes there could be a link in the header (maybe some more)
 				secAbove.text = stripHtmlTags(header.innerHTML);
+				// replace cut anything in brackets []
+				secAbove.text = secAbove.text.replace(/\[[^\]]*\]/,'');
 				// should be set only once (as it is always the same), but let's leave it that way
 				secReplyText = textReplyShort;
 			}
