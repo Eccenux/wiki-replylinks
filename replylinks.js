@@ -254,7 +254,7 @@ function parseSectionText(html){
 	// replace wiki stuff with null
 	html = html.replace(/[\{\}]/g,'');
 	// trim (right,left)
-	html = html..replace(/[ \t]*$/,'').replace(/^[ \t]*/,'');
+	html = html.replace(/[ \t]*$/,'').replace(/^[ \t]*/,'');
 	return html
 }
 
