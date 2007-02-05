@@ -11,7 +11,7 @@
 	Problems:
 	* not working well with IE (encoding bugs with UTF-8 special chars)
 	
-	version:		0.8.0
+	version:		0.8.1
 	copyright:		(C) 2006 Maciej Jaros (pl:User:Nux, en:User:EcceNux)
 	licence:		GNU General Public License v2,
 					http://opensource.org/licenses/gpl-license.php
@@ -60,17 +60,20 @@ function autoNewSectionName()
 		//
 		var reParam = new RegExp ("&newsectionname=([^&]*)", "i");	// ignoring lettercase
 		var matches = reParam.exec(location.search);
+		var sectxt;
 		// append to input if all OK
 		if (matches)
-			elInput.value += '=='+unescape(matches[1])+'=='
-		;
+		{
+			sectxt = unescape(matches[1]);
+			elInput.value += '=='+sectxt+'==';
+		}
 		
 		//
 		// Add some summary
 		elInput = document.getElementById('wpSummary');
 		if (elInput)
 		{
-			matches = /[ ](.*)\]/.exec(location.search);
+			matches = /[ ](.*)\]/.exec(sectxt);
 			// append to input if all OK
 			if (matches)
 				elInput.value += unescape(matches[1])
