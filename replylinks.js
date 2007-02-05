@@ -114,7 +114,7 @@ function addReplyLinks()
 	// get latest
 	else
 	{
-		var hrefPermalink = wgCurRevisionId;
+		var hrefPermalink = '{{fullurl:' + wgPageName + '|oldid=' + wgCurRevisionId + '}}';
 	}
 	
 	//
