@@ -11,7 +11,7 @@
 	Problems:
 	* not working well with IE (encoding bugs with UTF-8 special chars)
 	
-	version:		0.7.3
+	version:		0.8.0
 	copyright:		(C) 2006 Maciej Jaros (pl:User:Nux, en:User:EcceNux)
 	licence:		GNU General Public License v2,
 					http://opensource.org/licenses/gpl-license.php
@@ -22,15 +22,13 @@ addOnloadHook(addReplyLinks);
 //
 // Settings
 //
-var hrefServerBase = 'http://pl.wikipedia.org';
-// en: 'http://en.wikipedia.org';
-var hrefUserAnonim = hrefServerBase + '/w/index.php\\?title=Specjalna:Contributions\\&target=';
+var hrefUserAnonim = wgServer + '/w/index.php\\?title=Specjalna:Wk%C5%82ad\\&target=';
 // en: '/w/index.php\\?title=Specjal:Contributions\\&target=';
-var hrefUserSpaced = hrefServerBase + '/wiki/Wikipedysta:';
+var hrefUserSpaced = wgServer + '/wiki/Wikipedysta:';
 // en: '/wiki/User:';
-var hrefUserSpacedNew = hrefServerBase + '/w/index.php\\?title=Wikipedysta:';
+var hrefUserSpacedNew =  wgServer + '/w/index.php\\?title=Wikipedysta:';
 // en: '/w/index.php\\?title=User:';
-var hrefUserTalkSpaced = hrefServerBase + '/wiki/Dyskusja_Wikipedysty:';
+var hrefUserTalkSpaced = wgServer + '/wiki/Dyskusja_Wikipedysty:';
 // en: '/wiki/User_talk:';
 var textReplyShort = 'Odp:';
 // en: 'Re:';
@@ -43,6 +41,7 @@ var textReplyLinkName = 'odp';
 	Function: autoNewSectionName
 	
 	Inserting new section name from the location string param.
+	Now assumes, that user edits a section rather then adding a new one.
 	
 	Params
 	------
@@ -51,19 +50,31 @@ var textReplyLinkName = 'odp';
 function autoNewSectionName()
 {
 	//
-	// Get section name input element
+	// Get input element for section name (now understood as the textbox)
 	//
-	var elInput = document.getElementById('wpSummary');
+	var elInput = document.getElementById('wpTextbox1');
 	if (elInput)
 	{
 		//
 		// Get data send from previous page
 		//
-		var reParam = new RegExp ("&newsectionname=([^&]*)", "i");	// with ignore case
+		var reParam = new RegExp ("&newsectionname=([^&]*)", "i");	// ignoring lettercase
 		var matches = reParam.exec(location.search);
+		// append to input if all OK
 		if (matches)
+			elInput.value += '=='+unescape(matches[1])+'=='
+		;
+		
+		//
+		// Add some summary
+		elInput = document.getElementById('wpSummary');
+		if (elInput)
 		{
-			elInput.value = unescape(matches[1]);
+			matches = /[ ](.*)\]/.exec(location.search);
+			// append to input if all OK
+			if (matches)
+				elInput.value += unescape(matches[1])
+			;
 		}
 	}
 }
@@ -85,22 +96,25 @@ function addReplyLinks()
 	//
 	// When to run this...
 	//
-	if (!document.getElementById('t-permalink') && !document.getElementById('t-ispermalink') )	// almost always
+	// if (!document.getElementById('t-permalink') && !document.getElementById('t-ispermalink') )	// almost always
+	if (wgCurRevisionId==0)	// no versioning available
 		return
 	;
 
 	var i;
 
 	//
-	// Get current page version link
+	// Get viewed page version link (may be something in history)
 	//
+	// this one means it is a perma link (comparing versions, showing one specfic version and such)
 	if (document.getElementById('t-ispermalink'))
 	{
 		var hrefPermalink = document.location.href;
 	}
+	// get latest
 	else
 	{
-		var hrefPermalink = document.getElementById('t-permalink').getElementsByTagName('a')[0].href;
+		var hrefPermalink = wgCurRevisionId;
 	}
 	
 	//
@@ -114,9 +128,7 @@ function addReplyLinks()
 	// getting first header name for default tags
 	var secAbove = new Object;
 	secAbove.id = 'bodyContent';
-	secAbove.text = stripHtmlTags(document.getElementById('content').getElementsByTagName('H1')[0].innerHTML);
-	// replace cut anything in brackets []
-	secAbove.text = secAbove.text.replace(/\[[^\]]*\]/,'');
+	secAbove.text = parseSectionText(document.getElementById('content').getElementsByTagName('H1')[0].innerHTML);
 	var secReplyText = textNoHeadShort;
 	//
 	// get every link with href="http://pl.wikipedia.org/wiki/Wikipedysta:..." (no slashes in dots)
@@ -146,7 +158,7 @@ function addReplyLinks()
 					//
 					// creating reply href
 					// var userName = matches[1];
-					var hrefReply = hrefUserTalkSpaced + matches[1] + '?action=edit&section=new';
+					var hrefReply = hrefUserTalkSpaced + matches[1] + '?action=edit&section=999999';
 					//
 					// and now to create and add data for the new reply section name
 					var newSectionName = '['+hrefPermalink+'#'+secAbove.id+' '+secReplyText+secAbove.text+']';
@@ -164,7 +176,7 @@ function addReplyLinks()
 //		}
 		//
 		// obtaining anchor and text of the section above user links
-		if (a[i].name != '')
+		if (a[i].name != '' && wgCanonicalNamespace!="Image") // skip obtaining headers in image pages
 		{
 			// going to header element text
 			var header;
@@ -180,9 +192,7 @@ function addReplyLinks()
 			{
 				secAbove.id = a[i].name;
 				// sometimes there could be a link in the header (maybe some more)
-				secAbove.text = stripHtmlTags(header.innerHTML);
-				// replace cut anything in brackets []
-				secAbove.text = secAbove.text.replace(/\[[^\]]*\]/,'');
+				secAbove.text = parseSectionText(header.innerHTML);
 				// should be set only once (as it is always the same), but let's leave it that way
 				secReplyText = textReplyShort;
 			}
@@ -212,7 +222,7 @@ function insertAfterGivenElement(el, newEl) {
 }
 
 /* ===================================================== *\
-	Function: stripHtmlTags
+	Function: [obsolete] stripHtmlTags
 	
 	Stripping HTML tags from the HTML text.
 	Returns stripped text.
@@ -223,6 +233,29 @@ function insertAfterGivenElement(el, newEl) {
 \* ===================================================== */
 function stripHtmlTags(html){
 	return html.replace(/<\S[^<>]*>/g, ''); // with global match (all will be replaced)
+}
+
+/* ===================================================== *\
+	Function: parseSectionText
+	
+	Stripping HTML tags from the HTML text and cleansing 
+	of some wikicode
+	Returns stripped text.
+	
+	Params
+	------
+		html - the html text
+\* ===================================================== */
+function parseSectionText(html){
+	// with global match (all will be replaced)
+	html = html.replace(/<\S[^<>]*>/g, '');
+	// replace cut anything in brackets [] (editing sections links and such)
+	html = html.replace(/\[[^\]]*\]/,'');
+	// replace wiki stuff with null
+	html = html.replace(/[\{\}]/g,'');
+	// trim (right,left)
+	html = html..replace(/[ \t]*$/,'').replace(/^[ \t]*/,'');
+	return html
 }
 
 // </pre>
