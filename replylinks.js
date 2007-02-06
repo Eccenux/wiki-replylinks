@@ -65,7 +65,7 @@ function autoNewSectionName()
 		if (matches)
 		{
 			sectxt = unescape(matches[1]);
-			elInput.value += '=='+sectxt+'==';
+			elInput.value += '=='+sectxt+'==\n\n';
 		}
 		
 		//
@@ -76,7 +76,7 @@ function autoNewSectionName()
 			matches = /[ ](.*)\]/.exec(sectxt);
 			// append to input if all OK
 			if (matches)
-				elInput.value += unescape(matches[1]) + "\n\n"
+				elInput.value += unescape(matches[1])
 			;
 		}
 	}
