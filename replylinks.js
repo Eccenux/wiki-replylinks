@@ -11,7 +11,7 @@
 	Problems:
 	* not working well with IE (encoding bugs with UTF-8 special chars)
 	
-	version:		0.8.1
+	version:		0.8.1--
 	copyright:		(C) 2006 Maciej Jaros (pl:User:Nux, en:User:EcceNux)
 	licence:		GNU General Public License v2,
 					http://opensource.org/licenses/gpl-license.php
@@ -65,7 +65,7 @@ function autoNewSectionName()
 		if (matches)
 		{
 			sectxt = unescape(matches[1]);
-			elInput.value += '=='+sectxt+'==\n\n';
+			elInput.value += ';'+sectxt+'\n\n';
 		}
 		
 		//
@@ -161,7 +161,7 @@ function addReplyLinks()
 					//
 					// creating reply href
 					// var userName = matches[1];
-					var hrefReply = hrefUserTalkSpaced + matches[1] + '?action=edit&section=999999';
+					var hrefReply = hrefUserTalkSpaced + matches[1] + '?action=edit&section=new';
 					//
 					// and now to create and add data for the new reply section name
 					var newSectionName = '['+hrefPermalink+'#'+secAbove.id+' '+secReplyText+secAbove.text+']';
