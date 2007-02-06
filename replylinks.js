@@ -76,7 +76,7 @@ function autoNewSectionName()
 			matches = /[ ](.*)\]/.exec(sectxt);
 			// append to input if all OK
 			if (matches)
-				elInput.value += unescape(matches[1])
+				elInput.value += unescape(matches[1]) + "\n\n"
 			;
 		}
 	}
