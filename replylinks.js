@@ -11,7 +11,7 @@
 	Problems:
 	* not working well with IE (encoding bugs with UTF-8 special chars)
 	
-	version:		0.8.1--
+	version:		1.0.0
 	copyright:		(C) 2006 Maciej Jaros (pl:User:Nux, en:User:EcceNux)
 	licence:		GNU General Public License v2,
 					http://opensource.org/licenses/gpl-license.php
