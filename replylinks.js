@@ -11,7 +11,7 @@
 	Problems:
 	* not working well with IE (encoding bugs with UTF-8 special chars)
 	
-	version:		1.0.0
+	version:		1.0.1
 	copyright:		(C) 2006 Maciej Jaros (pl:User:Nux, en:User:EcceNux)
 	licence:		GNU General Public License v2,
 					http://opensource.org/licenses/gpl-license.php
@@ -22,7 +22,7 @@ addOnloadHook(addReplyLinks);
 //
 // Settings
 //
-var hrefUserAnonim = wgServer + '/w/index.php\\?title=Specjalna:Wk%C5%82ad\\&target=';
+var hrefUserAnonim = wgServer + '/wiki/Specjalna:Wk%C5%82ad/';
 // en: '/w/index.php\\?title=Specjal:Contributions\\&target=';
 var hrefUserSpaced = wgServer + '/wiki/Wikipedysta:';
 // en: '/wiki/User:';
