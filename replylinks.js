@@ -6,12 +6,12 @@
 	+ adding reply links near user links
 	+ inserting text given in newsectionname param (as PHP param in the location string of the page)
 	
-	Problemy:
+	Problemy(?):
 	* nie działa dla IE (błędy kodowania niektórych znaków UTF-8)
-	Problems:
+	Problems(?):
 	* not working well with IE (encoding bugs with UTF-8 special chars)
 	
-	version:		1.0.1
+	version:		1.0.2
 	copyright:		(C) 2006 Maciej Jaros (pl:User:Nux, en:User:EcceNux)
 	licence:		GNU General Public License v2,
 					http://opensource.org/licenses/gpl-license.php
@@ -64,7 +64,7 @@ function autoNewSectionName()
 		// append to input if all OK
 		if (matches)
 		{
-			sectxt = unescape(matches[1]);
+			sectxt = decodeURIComponent(matches[1]);
 			elInput.value += ';'+sectxt+'\n\n';
 		}
 		
@@ -76,7 +76,7 @@ function autoNewSectionName()
 			matches = /[ ](.*)\]/.exec(sectxt);
 			// append to input if all OK
 			if (matches)
-				elInput.value += unescape(matches[1])
+				elInput.value += decodeURIComponent(matches[1])
 			;
 		}
 	}
@@ -165,7 +165,7 @@ function addReplyLinks()
 					//
 					// and now to create and add data for the new reply section name
 					var newSectionName = '['+hrefPermalink+'#'+secAbove.id+' '+secReplyText+secAbove.text+']';
-					hrefReply += '&newsectionname=' + escape(newSectionName);
+					hrefReply += '&newsectionname=' + encodeURIComponent(newSectionName);
 					var newEl = document.createElement('small');
 					var newA = document.createElement('A');
 					newA.setAttribute('href', hrefReply);
