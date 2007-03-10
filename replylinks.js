@@ -1,18 +1,13 @@
 // Instrukcja: [[Wikipedia:Narzędzia/Odpowiedzi z linkami]]
 // <pre>
 /* ======================================================================== *\
-	Reply links with relation links
+	Reply links with backtrack links
 	
 	+ adding reply links near user links
 	+ inserting text given in newsectionname param (as PHP param in the location string of the page)
 	
-	Problemy(?):
-	* nie działa dla IE (błędy kodowania niektórych znaków UTF-8)
-	Problems(?):
-	* not working well with IE (encoding bugs with UTF-8 special chars)
-	
 	version:		1.0.2
-	copyright:		(C) 2006 Maciej Jaros (pl:User:Nux, en:User:EcceNux)
+	copyright:		(C) 2006-2007 Maciej Jaros (pl:User:Nux, en:User:EcceNux)
 	licence:		GNU General Public License v2,
 					http://opensource.org/licenses/gpl-license.php
 \* ======================================================================== */
@@ -40,8 +35,7 @@ var textReplyLinkName = 'odp';
 /* ===================================================== *\
 	Function: autoNewSectionName
 	
-	Inserting new section name from the location string param.
-	Now assumes, that user edits a section rather then adding a new one.
+	Inserting new section name and some info from the location string param.
 	
 	Params
 	------
@@ -86,9 +80,6 @@ function autoNewSectionName()
 	Function: addReplyLinks
 	
 	Adding reply links near user links.
-	
-	Problemy:
-	* nie działa dla IE (błędy kodowania UTF-8)
 	
 	Params
 	------
