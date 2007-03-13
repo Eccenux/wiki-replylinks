@@ -35,7 +35,7 @@ var textReplyLinkName = 'odp';
 // botname->username
 var trbots = {
 'A.bot':'A.',
-'Adas bot':'Adziura',
+'Adas_bot':'Adziura',
 'AutoBot':'WarX',
 'Bluebot':'Blueshade',
 'BrokenglaSSbot':'BrokenglaSS',
@@ -61,7 +61,7 @@ var trbots = {
 'RooBot':'Roo72',
 'Stv.bot':'Stv',
 'Tawbot':'Taw',
-'tsca.bot':'Tsca',
+'Tsca.bot':'Tsca',
 'VindiBot':'Vindicator',
 'WarXboT':'WarX',
 'YarluBot':'Yarl'
