@@ -4,9 +4,9 @@
 	Reply links with backtrack links
 	
 	+ adding reply links near user links
-	+ inserting text given in newsectionname param (as PHP param in the location string of the page)
+	+ inserting text given in newsectionname (as PHP param in the location string of the page)
 	
-	version:		1.0.2
+	version:		1.1.0
 	copyright:		(C) 2006-2007 Maciej Jaros (pl:User:Nux, en:User:EcceNux)
 	licence:		GNU General Public License v2,
 					http://opensource.org/licenses/gpl-license.php
@@ -31,6 +31,41 @@ var textNoHeadShort = 'Ad:';
 // en: 'Ad:';
 var textReplyLinkName = 'odp';
 // en: 'reply';
+
+// botname->username
+var trbots = {
+'A.bot':'A.',
+'Adas bot':'Adziura',
+'AutoBot':'WarX',
+'Bluebot':'Blueshade',
+'BrokenglaSSbot':'BrokenglaSS',
+'Bugbot':'Lcamtuf',
+'BzBot':'BeŻet',
+'DodekBot':'Dodek',
+'DonnerJack.bot':'ABach',
+'EgonBOT':'Egon',
+'Erwin-Bot':'Ejdzej',
+'Faxebot':'Faxe',
+'Holek.Bot':'Holek',
+'Jozef-k.bot':'Jozef-k',
+'Kbot':'Kb',
+'LeafBot':'Leafnode',
+'MarciBOT':'Marcimon',
+'MalarzBOT':'malarz pl',
+'Margosbot':'Margos',
+'Matbot':'Matusz',
+'McBot':'McMonster',
+'OdderBot':'Odder',
+'Olafbot':'Olaf',
+'Rebot':'Jagger',
+'RooBot':'Roo72',
+'Stv.bot':'Stv',
+'Tawbot':'Taw',
+'tsca.bot':'Tsca',
+'VindiBot':'Vindicator',
+'WarXboT':'WarX',
+'YarluBot':'Yarl'
+}
 
 /* ===================================================== *\
 	Function: autoNewSectionName
@@ -134,17 +169,15 @@ function addReplyLinks()
 			// checking if this is a user link
 			if (a[i].href != '' && a[i].getAttribute('href').indexOf('#')==-1)
 			{
-				if (a[i].className=='new')
-				{
-					var matches = reHrefNew.exec(a[i].href);
-				}
-				else
-				{
-					var matches = reHref.exec(a[i].href);
-				}
+				var matches = (a[i].className=='new') ? reHrefNew.exec(a[i].href) : reHref.exec(a[i].href);
 				if (!matches)
 				{
 					matches = reHrefAnonim.exec(a[i].href);
+				}
+				// botname translation due to match with nonanonimous link
+				else if (trbots[matches[1]] != undefined)
+				{
+					matches[1] = trbots[matches[1]];
 				}
 
 				if (matches)
