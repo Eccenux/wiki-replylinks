@@ -6,7 +6,7 @@
 	+ adding reply links near user links
 	+ inserting text given in newsectionname (as PHP param in the location string of the page)
 	
-	version:		1.1.0
+	version:		1.3.0
 	copyright:		(C) 2006-2007 Maciej Jaros (pl:User:Nux, en:User:EcceNux)
 	licence:		GNU General Public License v2,
 					http://opensource.org/licenses/gpl-license.php
@@ -31,6 +31,9 @@ var textNoHeadShort = 'Ad:';
 // en: 'Ad:';
 var textReplyLinkName = 'odp';
 // en: 'reply';
+
+// IP will be added to the end to create a working link
+var hrefOnlineIPwhois = 'http://www.ripe.net/perl/whois?form_type=simple&searchtext=';
 
 // botname->username
 var trbots = {
@@ -162,6 +165,7 @@ function addReplyLinks()
 	//
 	// get every link with href="http://pl.wikipedia.org/wiki/Wikipedysta:..." (no slashes in dots)
 	var a = document.getElementById('bodyContent').getElementsByTagName('A');
+	var anonimous = false;
 	for (i = 0; i < a.length; i++) {
 //		if (secAbove)
 //		{
@@ -173,6 +177,7 @@ function addReplyLinks()
 				if (!matches)
 				{
 					matches = reHrefAnonim.exec(a[i].href);
+					anonimous = true;
 				}
 				// botname translation due to match with nonanonimous link
 				else if (trbots[matches[1]] != undefined)
@@ -191,13 +196,23 @@ function addReplyLinks()
 					var newSectionName = '['+hrefPermalink+'#'+secAbove.id+' '+secReplyText+secAbove.text+']';
 					hrefReply += '&newsectionname=' + encodeURIComponent(newSectionName);
 					var newEl = document.createElement('small');
-					var newA = document.createElement('A');
+					var newA = document.createElement('a');
 					newA.setAttribute('href', hrefReply);
 					newA.setAttribute('title', textReplyShort+secAbove.text);
 					newA.appendChild(document.createTextNode('['+textReplyLinkName+']'))
 					newEl.appendChild(newA);
 					insertAfterGivenElement(a[i],newEl);
 					i++;	// a is a dynamic list
+					// Anonimous whois checker
+					if (anonimous)
+					{
+						newA = document.createElement('a');
+						newA.setAttribute('href', hrefOnlineIPwhois+matches[1]);
+						newA.setAttribute('title', 'IP whois');
+						newA.appendChild(document.createTextNode('[?]'))
+						newEl.appendChild(newA); // appending to previously created
+						i++;	// a is a dynamic list
+					}
 				}
 			}
 //		}
