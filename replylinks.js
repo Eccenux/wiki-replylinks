@@ -165,7 +165,7 @@ function addReplyLinks()
 	//
 	// get every link with href="http://pl.wikipedia.org/wiki/Wikipedysta:..." (no slashes in dots)
 	var a = document.getElementById('bodyContent').getElementsByTagName('A');
-	var anonimous = false;
+	var anonimous;
 	for (i = 0; i < a.length; i++) {
 //		if (secAbove)
 //		{
@@ -173,6 +173,7 @@ function addReplyLinks()
 			// checking if this is a user link
 			if (a[i].href != '' && a[i].getAttribute('href').indexOf('#')==-1)
 			{
+				anonimous = false;
 				var matches = (a[i].className=='new') ? reHrefNew.exec(a[i].href) : reHref.exec(a[i].href);
 				if (!matches)
 				{
