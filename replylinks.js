@@ -17,7 +17,7 @@ addOnloadHook(addReplyLinks);
 //
 // Settings
 //
-var hrefUserAnonim = wgServer + '/wiki/Specjalna:Wk%C5%82ad/';
+var hrefUserAnonim = wgServer + '/wiki/Specjalna:[CW][ok][n%][tC][r5][i%][b8][u2][ta][id][ons]*/'; // Contributions|Wkład
 // en: '/w/index.php\\?title=Specjal:Contributions\\&target=';
 var hrefUserSpaced = wgServer + '/wiki/Wikipedysta:';
 // en: '/wiki/User:';
