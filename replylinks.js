@@ -1,18 +1,23 @@
-// Instrukcja: [[Wikipedia:Narzędzia/Odpowiedzi z linkami]]
-// <pre>
-/* ======================================================================== *\
-	Reply links with backtrack links
+/* ------------------------------------------------------------------------ *\
+    Odpowiedzi z linkami
+         Opis:  http://pl.wikipedia.org/wiki/Wikipedia:Narz%C4%99dzia/Odpowiedzi_z_linkami
+
+    Reply links with backtrack links
+        + adding reply links near user links
+        + inserting text given in newsectionname (as PHP param in the location string of the page)
 	
-	+ adding reply links near user links
-	+ inserting text given in newsectionname (as PHP param in the location string of the page)
-	
-	version:		1.3.1
-	copyright:		(C) 2006-2007 Maciej Jaros (pl:User:Nux, en:User:EcceNux)
-	licence:		GNU General Public License v2,
-					http://opensource.org/licenses/gpl-license.php
-\* ======================================================================== */
+    Copyright:  ©2006-2008 Maciej Jaros (pl:User:Nux, en:User:EcceNux)
+     Licencja:  GNU General Public License v2
+                http://opensource.org/licenses/gpl-license.php
+\* ------------------------------------------------------------------------ */
+//  wersja:
+	var tmp_VERSION = '1.3.3';  // = rep_links.version = rep_links.ver
+// ------------------------------------------------------------------------ //
+
 addOnloadHook(autoNewSectionName);
 addOnloadHook(addReplyLinks);
+
+var rep_links.version = rep_links.ver = tmp_VERSION;
 
 //
 // Settings
@@ -70,6 +75,7 @@ var trbots = {
 'OdderBot':'Odder',
 'Olafbot':'Olaf',
 'OldEnt.bot':'Grzegorz_Dąbrowski',
+'PowerBot':'Powerek38',
 'RooBot':'Roo72',
 'Staszek_Jest_Jeszcze_Szybszy':'Staszek_Szybki_Jest',
 'Stv.bot':'Stv',
@@ -78,6 +84,7 @@ var trbots = {
 'Tsca.bot':'Tsca',
 'VindiBot':'Vindicator',
 'WarXboT':'WarX',
+'WiktorynBot':'Wiktoryn',
 'YarluBot':'Yarl'
 }
 
@@ -311,5 +318,3 @@ function parseSectionText(html){
 	html = html.replace(/[ \t]*$/,'').replace(/^[ \t]*/,'');
 	return html
 }
-
-// </pre>
