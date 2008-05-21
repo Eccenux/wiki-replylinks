@@ -11,13 +11,13 @@
                 http://opensource.org/licenses/gpl-license.php
 \* ------------------------------------------------------------------------ */
 //  wersja:
-	var tmp_VERSION = '1.3.3';  // = rep_links.version = rep_links.ver
+	var tmp_VERSION = '1.3.4';  // = rep_links_version = rep_links_ver
 // ------------------------------------------------------------------------ //
 
 addOnloadHook(autoNewSectionName);
 addOnloadHook(addReplyLinks);
 
-var rep_links.version = rep_links.ver = tmp_VERSION;
+var rep_links_version = rep_links_ver = tmp_VERSION;
 
 //
 // Settings
