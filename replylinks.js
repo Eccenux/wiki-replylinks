@@ -11,18 +11,24 @@
                 http://opensource.org/licenses/gpl-license.php
 \* ------------------------------------------------------------------------ */
 //  wersja:
-	var tmp_VERSION = '1.3.4';  // = rep_links_version = rep_links_ver
+	var tmp_VERSION = '1.5.0';  // = rep_links_version = rep_links_ver
 // ------------------------------------------------------------------------ //
 
-addOnloadHook(autoNewSectionName);
-addOnloadHook(addReplyLinks);
+if (wgAction=='edit')
+{
+	addOnloadHook(autoNewSectionName);
+}
+if (wgAction!='edit' && wgAction!='submit')
+{
+	addOnloadHook(addReplyLinks);
+}
 
 var rep_links_version = rep_links_ver = tmp_VERSION;
 
 //
 // Settings
-//
-var hrefUserAnonim = wgServer + '/wiki/Specjalna:[CW][ok][n%][tC][r5][i%][b8][u2][ta][id][ons]*/'; // Contributions|Wkład
+//                                                 
+var hrefUserAnonim = wgServer + '/wiki/Specjalna:(?:Contributions|Wk%C5%82ad)*/';
 // en: '/w/index.php\\?title=Specjal:Contributions\\&target=';
 var hrefUserSpaced = wgServer + '/wiki/Wikipedysta:';
 // en: '/wiki/User:';
@@ -40,24 +46,32 @@ var textReplyLinkName = 'odp';
 // IP will be added to the end to create a working link
 var hrefOnlineIPwhois = 'http://www.ripe.net/perl/whois?form_type=simple&searchtext=';
 
-// botname->username
+/*
+botname->username
+
+http://pl.wikipedia.org/w/index.php?title=Wikipedia:Boty&action=edit&section=3
+...tableinfo\|([^|]+)\|[^\[\]]+\[\[(?:User|Wikipedysta):([^\[\]\|]+).*
+'$1':'$2',
+*/
 var trbots = {
 'A.bot':'A.',
 'Adas_bot':'Adziura',
+'AlohaBOT':'Patrol110',
 'AutoBot':'WarX',
 'Beau.bot':'Beau',
+'Beau.bot.admin':'Beau',
 'Bluebot':'Blueshade',
 'BOTiczelli':'ABX',
-'BrokenglaSSbot':'BrokenglaSS',
 'Bugbot':'Lcamtuf',
 'BzBot':'BeŻet',
 'ClueBot':'Mathel',
+'Cookie.bot':'Jwitos',
 'DodekBot':'Dodek',
 'DonnerJack.bot':'ABach',
 'EgonBOT':'Egon',
-'Erwin-Bot':'Ejdzej',
+'EquadusBot':'Equadus',
 'Faxebot':'Faxe',
-'GangleriBot':'Gangleri',
+'g.bot':'gregul',
 'Holek.Bot':'Holek',
 'Jozef-k.bot':'Jozef-k',
 'KamikazeBot':'Karol007',
@@ -71,14 +85,17 @@ var trbots = {
 'MatmaBot':'Matma_Rex',
 'McBot':'McMonster',
 'MiszaBot':'Misza13',
+'Miner':'Saper',
 'NickyBot':'Wpedzich',
 'OdderBot':'Odder',
+'Ohtnim':'Mintho',
 'Olafbot':'Olaf',
 'OldEnt.bot':'Grzegorz_Dąbrowski',
 'PowerBot':'Powerek38',
 'RooBot':'Roo72',
 'Staszek_Jest_Jeszcze_Szybszy':'Staszek_Szybki_Jest',
 'Stv.bot':'Stv',
+'Sunridin.bot':'Sunridin',
 'Szczepan.bot':'Szczepan1990',
 'Tawbot':'Taw',
 'Tsca.bot':'Tsca',
@@ -157,7 +174,7 @@ function addReplyLinks()
 	// Get viewed page version link (may be something in history)
 	//
 	// this one means it is a perma link (comparing versions, showing one specfic version and such)
-	if (document.getElementById('t-ispermalink'))
+	if (document.location.href.indexOf('&oldid=')!=-1)
 	{
 		var hrefPermalink = document.location.href;
 	}
@@ -168,94 +185,97 @@ function addReplyLinks()
 	}
 	
 	//
-	// Get some places to put this into and puting this
+	// Find user pages links and put links into them
 	//
+	
+	//
+	// create regexpes for user links
 	var reHref = new RegExp (hrefUserSpaced + "([^/]*)$", "i");	// with ignore case
 	var reHrefNew = new RegExp (hrefUserSpacedNew + "([^/?&]*)", "i");	// with ignore case
 	var reHrefAnonim = new RegExp (hrefUserAnonim + "([\.0-9]*)$");
 	
 	//
-	// getting first header name for default tags
+	// first header as a default section
 	var secAbove = new Object;
 	secAbove.id = 'bodyContent';
 	secAbove.text = parseSectionText(document.getElementById('content').getElementsByTagName('H1')[0].innerHTML);
 	var secReplyText = textNoHeadShort;
 	//
-	// get every link with href="http://pl.wikipedia.org/wiki/Wikipedysta:..." (no slashes in dots)
+	// in search for links...
 	var a = document.getElementById('bodyContent').getElementsByTagName('A');
-	var anonimous;
-	for (i = 0; i < a.length; i++) {
-//		if (secAbove)
-//		{
-			//
-			// checking if this is a user link
-			if (a[i].href != '' && a[i].getAttribute('href').indexOf('#')==-1)
+	for (i = 0; i < a.length; i++)
+	{
+		//
+		// checking if this is a user link
+		if (a[i].href != '' && a[i].getAttribute('href').indexOf('#')==-1)
+		{
+			var anonimous = false;
+			var matches = (a[i].className=='new') ? reHrefNew.exec(a[i].href) : reHref.exec(a[i].href);
+			if (!matches)
 			{
-				anonimous = false;
-				var matches = (a[i].className=='new') ? reHrefNew.exec(a[i].href) : reHref.exec(a[i].href);
-				if (!matches)
-				{
-					matches = reHrefAnonim.exec(a[i].href);
-					anonimous = true;
-				}
-				// botname translation due to match with nonanonimous link
-				else if (trbots[matches[1]] != undefined)
-				{
-					matches[1] = trbots[matches[1]];
-				}
+				matches = reHrefAnonim.exec(a[i].href);
+				anonimous = true;
+			}
+			// botname translation due to match with nonanonimous link
+			else if (trbots[matches[1]] != undefined)
+			{
+				matches[1] = trbots[matches[1]];
+			}
 
-				if (matches)
+			if (matches)
+			{
+				//
+				// creating reply href
+				// var userName = matches[1];
+				var hrefReply = hrefUserTalkSpaced + matches[1] + '?action=edit&section=new';
+				//
+				// and now to create and add data for the new reply section name
+				var newSectionName = '['+hrefPermalink+'#'+secAbove.id+' '+secReplyText+secAbove.text+']';
+				hrefReply += '&newsectionname=' + encodeURIComponent(newSectionName);
+				var newEl = document.createElement('small');
+				var newA = document.createElement('a');
+				newA.setAttribute('href', hrefReply);
+				newA.setAttribute('title', textReplyShort+secAbove.text);
+				newA.appendChild(document.createTextNode('['+textReplyLinkName+']'))
+				newEl.appendChild(newA);
+				insertAfterGivenElement(a[i],newEl);
+				i++;	// a is a dynamic list
+				// Anonimous whois checker
+				if (anonimous)
 				{
-					//
-					// creating reply href
-					// var userName = matches[1];
-					var hrefReply = hrefUserTalkSpaced + matches[1] + '?action=edit&section=new';
-					//
-					// and now to create and add data for the new reply section name
-					var newSectionName = '['+hrefPermalink+'#'+secAbove.id+' '+secReplyText+secAbove.text+']';
-					hrefReply += '&newsectionname=' + encodeURIComponent(newSectionName);
-					var newEl = document.createElement('small');
-					var newA = document.createElement('a');
-					newA.setAttribute('href', hrefReply);
-					newA.setAttribute('title', textReplyShort+secAbove.text);
-					newA.appendChild(document.createTextNode('['+textReplyLinkName+']'))
-					newEl.appendChild(newA);
-					insertAfterGivenElement(a[i],newEl);
+					newA = document.createElement('a');
+					newA.setAttribute('href', hrefOnlineIPwhois+matches[1]);
+					newA.setAttribute('title', 'IP whois');
+					newA.appendChild(document.createTextNode('[?]'))
+					newEl.appendChild(newA); // appending to previously created
 					i++;	// a is a dynamic list
-					// Anonimous whois checker
-					if (anonimous)
-					{
-						newA = document.createElement('a');
-						newA.setAttribute('href', hrefOnlineIPwhois+matches[1]);
-						newA.setAttribute('title', 'IP whois');
-						newA.appendChild(document.createTextNode('[?]'))
-						newEl.appendChild(newA); // appending to previously created
-						i++;	// a is a dynamic list
-					}
 				}
 			}
-//		}
+		}
+
 		//
-		// obtaining anchor and text of the section above user links
-		if (a[i].name != '' && wgCanonicalNamespace!="Image") // skip obtaining headers in image pages
+		// a little hunt for sections (anchor and text of the section above user links
+		if (wgCanonicalNamespace!="Image" && a[i].id != '' && a[i].parentNode.nodeName=='P') // skip obtaining headers on image pages
 		{
-			// going to header element text
-			var header;
-			if (a[i].parentNode.nextSibling.nodeType == document.TEXT_NODE)
-				// FF
-				header = a[i].parentNode.nextSibling.nextSibling
-			else
-				// IE
-				header = a[i].parentNode.nextSibling
-			;
-			// check if this is the right element - if not skip
-			if (header) if (header.nodeType == document.ELEMENT_NODE)
+			var header = a[i].parentNode;
+			// moving forward in search for the header
+			var found;
+			for (found=3; found; found--)	// max 3 forward
 			{
-				secAbove.id = a[i].name;
+				header = header.nextSibling;
+				if (header!=null && header.nodeType==document.ELEMENT_NODE && header.nodeName.search(/h[0-9]/i)==0)
+				{
+					break;
+				}
+			}
+			if (found)
+			{
+				secAbove.id = a[i].id;
 				// sometimes there could be a link in the header (maybe some more)
 				secAbove.text = parseSectionText(header.innerHTML);
 				// should be set only once (as it is always the same), but let's leave it that way
 				secReplyText = textReplyShort;
+				//header.innerHTML = '['+secAbove.id+'@'+found+']&rarr;'+secAbove.text;
 			}
 		}
 	}
@@ -271,7 +291,8 @@ function addReplyLinks()
 		el - element object to insert after
 		newEl - (new) element object to insert
 \* ===================================================== */
-function insertAfterGivenElement(el, newEl) {
+function insertAfterGivenElement(el, newEl)
+{
 	if (el.nextSibling)
 	{
 		el.parentNode.insertBefore(newEl, el.nextSibling);
@@ -292,7 +313,8 @@ function insertAfterGivenElement(el, newEl) {
 	------
 		html - the html text
 \* ===================================================== */
-function stripHtmlTags(html){
+function stripHtmlTags(html)
+{
 	return html.replace(/<\S[^<>]*>/g, ''); // with global match (all will be replaced)
 }
 
@@ -307,7 +329,8 @@ function stripHtmlTags(html){
 	------
 		html - the html text
 \* ===================================================== */
-function parseSectionText(html){
+function parseSectionText(html)
+{
 	// with global match (all will be replaced)
 	html = html.replace(/<\S[^<>]*>/g, '');
 	// replace cut anything in brackets [] (editing sections links and such)
