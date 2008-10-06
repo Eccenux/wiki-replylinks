@@ -176,7 +176,7 @@ function addReplyLinks()
 	// this one means it is a perma link (comparing versions, showing one specfic version and such)
 	if (document.location.href.indexOf('&oldid=')!=-1)
 	{
-		var hrefPermalink = document.location.href;
+		var hrefPermalink = document.location.href.replace(/#.+$/,'');
 	}
 	// get latest
 	else
