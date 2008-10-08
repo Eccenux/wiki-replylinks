@@ -11,7 +11,7 @@
                 http://opensource.org/licenses/gpl-license.php
 \* ------------------------------------------------------------------------ */
 //  wersja:
-	var tmp_VERSION = '1.5.0';  // = rep_links_version = rep_links_ver
+	var tmp_VERSION = '1.5.1';  // = rep_links_version = rep_links_ver
 // ------------------------------------------------------------------------ //
 
 if (wgAction=='edit')
@@ -255,7 +255,7 @@ function addReplyLinks()
 
 		//
 		// a little hunt for sections (anchor and text of the section above user links
-		if (wgCanonicalNamespace!="Image" && a[i].id != '' && a[i].parentNode.nodeName=='P') // skip obtaining headers on image pages
+		if (wgNamespaceNumber == 6 && a[i].id != '' && a[i].parentNode.nodeName=='P') // skip obtaining headers on image pages and non-header links
 		{
 			var header = a[i].parentNode;
 			// moving forward in search for the header
