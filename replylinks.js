@@ -255,7 +255,7 @@ function addReplyLinks()
 
 		//
 		// a little hunt for sections (anchor and text of the section above user links
-		if (wgNamespaceNumber == 6 && a[i].id != '' && a[i].parentNode.nodeName=='P') // skip obtaining headers on image pages and non-header links
+		if (wgNamespaceNumber != 6 && a[i].id != '' && a[i].parentNode.nodeName=='P') // skip obtaining headers on image pages and non-header links
 		{
 			var header = a[i].parentNode;
 			// moving forward in search for the header
