@@ -214,7 +214,7 @@ function addReplyLinks()
 	// first header as a default section
 	var secAbove = new Object;
 	secAbove.id = bodyContent_id;
-	secAbove.text = parseSectionText(content.getElementsByTagName('H1')[0].innerHTML);
+	secAbove.text = parseSectionText(document.getElementsByTagName('H1')[0].innerHTML);
 	var secReplyText = textNoHeadShort;
 	//
 	// in search for links...
