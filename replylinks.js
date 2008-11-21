@@ -11,7 +11,7 @@
                 http://opensource.org/licenses/gpl-license.php
 \* ------------------------------------------------------------------------ */
 //  wersja:
-	var tmp_VERSION = '1.5.1';  // = rep_links_version = rep_links_ver
+	var tmp_VERSION = '1.5.2';  // = rep_links_version = rep_links_ver
 // ------------------------------------------------------------------------ //
 
 if (wgAction=='edit')
@@ -193,16 +193,32 @@ function addReplyLinks()
 	var reHref = new RegExp (hrefUserSpaced + "([^/]*)$", "i");	// with ignore case
 	var reHrefNew = new RegExp (hrefUserSpacedNew + "([^/?&]*)", "i");	// with ignore case
 	var reHrefAnonim = new RegExp (hrefUserAnonim + "([\.0-9]*)$");
+
+	var content = document.getElementById('content');
+	if (!content)
+	{
+		content = document.getElementById('mw_content');	// moder skin
+		if (!content)
+		{
+			return;
+		}
+	}
+	var bodyContent_id = 'bodyContent';
+	var bodyContent = document.getElementById(bodyContent_id);
+	if (bodyContent)
+	{
+		bodyContent = document.getElementById('mw_contentholder');	// moder skin
+	}
 	
 	//
 	// first header as a default section
 	var secAbove = new Object;
-	secAbove.id = 'bodyContent';
-	secAbove.text = parseSectionText(document.getElementById('content').getElementsByTagName('H1')[0].innerHTML);
+	secAbove.id = bodyContent_id;
+	secAbove.text = parseSectionText(content.getElementsByTagName('H1')[0].innerHTML);
 	var secReplyText = textNoHeadShort;
 	//
 	// in search for links...
-	var a = document.getElementById('bodyContent').getElementsByTagName('A');
+	var a = bodyContent.getElementsByTagName('A');
 	for (i = 0; i < a.length; i++)
 	{
 		//
