@@ -11,7 +11,7 @@
                 http://opensource.org/licenses/gpl-license.php
 \* ------------------------------------------------------------------------ */
 //  wersja:
-	var tmp_VERSION = '1.5.2';  // = rep_links_version = rep_links_ver
+	var tmp_VERSION = '1.5.3';  // = rep_links_version = rep_links_ver
 // ------------------------------------------------------------------------ //
 
 if (wgAction=='edit')
@@ -205,7 +205,7 @@ function addReplyLinks()
 	}
 	var bodyContent_id = 'bodyContent';
 	var bodyContent = document.getElementById(bodyContent_id);
-	if (bodyContent)
+	if (!bodyContent)
 	{
 		bodyContent = document.getElementById('mw_contentholder');	// moder skin
 	}
