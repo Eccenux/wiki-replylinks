@@ -6,12 +6,12 @@
         + adding reply links near user links
         + inserting text given in newsectionname (as PHP param in the location string of the page)
 	
-    Copyright:  ©2006-2008 Maciej Jaros (pl:User:Nux, en:User:EcceNux)
+    Copyright:  ©2006-2009 Maciej Jaros (pl:User:Nux, en:User:EcceNux)
      Licencja:  GNU General Public License v2
                 http://opensource.org/licenses/gpl-license.php
 \* ------------------------------------------------------------------------ */
 //  wersja:
-	var tmp_VERSION = '1.5.3';  // = rep_links_version = rep_links_ver
+	var tmp_VERSION = '1.5.4';  // = rep_links_version = rep_links_ver
 // ------------------------------------------------------------------------ //
 
 if (wgAction=='edit')
@@ -20,7 +20,7 @@ if (wgAction=='edit')
 }
 if (wgAction!='edit' && wgAction!='submit')
 {
-	addOnloadHook(addReplyLinks);
+//	addOnloadHook(addReplyLinks);
 }
 
 var rep_links_version = rep_links_ver = tmp_VERSION;
@@ -217,13 +217,14 @@ function addReplyLinks()
 	secAbove.text = parseSectionText(document.getElementsByTagName('H1')[0].innerHTML);
 	var secReplyText = textNoHeadShort;
 	//
-	// in search for links...
-	var a = bodyContent.getElementsByTagName('A');
+	// in search for links... and sections
+	//var a = bodyContent.getElementsByTagName('A');
+	var a = qm_getElementsByTagNames ('A,SPAN',bodyContent);
 	for (i = 0; i < a.length; i++)
 	{
 		//
 		// checking if this is a user link
-		if (a[i].href != '' && a[i].getAttribute('href').indexOf('#')==-1)
+		if (a[i].nodeName.toLowerCase()=='a' && a[i].href != '' && a[i].getAttribute('href').indexOf('#')==-1)
 		{
 			var anonimous = false;
 			var matches = (a[i].className=='new') ? reHrefNew.exec(a[i].href) : reHref.exec(a[i].href);
@@ -271,7 +272,7 @@ function addReplyLinks()
 
 		//
 		// a little hunt for sections (anchor and text of the section above user links
-		if (wgNamespaceNumber != 6 && a[i].id != '' && a[i].parentNode.nodeName=='P') // skip obtaining headers on image pages and non-header links
+		if (a[i].nodeName.toLowerCase()=='a' && wgNamespaceNumber != 6 && a[i].id != '' && a[i].parentNode.nodeName=='P') // skip obtaining headers on image pages and non-header links
 		{
 			var header = a[i].parentNode;
 			// moving forward in search for the header
@@ -293,6 +294,17 @@ function addReplyLinks()
 				secReplyText = textReplyShort;
 				//header.innerHTML = '['+secAbove.id+'@'+found+']&rarr;'+secAbove.text;
 			}
+		}
+		//
+		// vector style sections
+		if (a[i].className=='mw-headline')
+		{
+			secAbove.id = a[i].id;
+			// sometimes there could be a link in the header (maybe some more)
+			secAbove.text = parseSectionText(a[i].innerHTML);
+			// should be set only once (as it is always the same), but let's leave it that way
+			secReplyText = textReplyShort;
+			//header.innerHTML = '['+secAbove.id+'@'+found+']&rarr;'+secAbove.text;
 		}
 	}
 }
@@ -356,4 +368,45 @@ function parseSectionText(html)
 	// trim (right,left)
 	html = html.replace(/[ \t]*$/,'').replace(/^[ \t]*/,'');
 	return html
+}
+
+/* -------------------------------------------------------- *\
+	Pobiera elementy o nazwach podanych na liście
+	
+	Elementy zwracane są w kolejności występowania 
+	w dokumencie.
+	
+	obj - element wzg. którego pobierać elementy z listy
+	jak w obj.getElementsByTagName('el.name')
+\* -------------------------------------------------------- */
+if (typeof(qm_getElementsByTagNames)!='function')
+{
+	function qm_getElementsByTagNames (list,obj)
+	{
+		if (!obj) obj = document;
+		var tagNames = list.split(',');
+		var resultArray = new Array();
+		for (var i=0;i<tagNames.length;i++)
+		{
+			var tags = obj.getElementsByTagName(tagNames[i]);
+			for (var j=0;j<tags.length;j++)
+			{
+				resultArray.push(tags[j]);
+			}
+		}
+		var testNode = resultArray[0];
+		if (testNode.sourceIndex)
+		{
+			resultArray.sort(function (a,b) {
+					return a.sourceIndex - b.sourceIndex;
+			});
+		}
+		else if (testNode.compareDocumentPosition)
+		{
+			resultArray.sort(function (a,b) {
+					return 3 - (a.compareDocumentPosition(b) & 6);
+			});
+		}
+		return resultArray;
+	}
 }
