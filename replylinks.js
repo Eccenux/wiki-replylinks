@@ -20,7 +20,7 @@ if (wgAction=='edit')
 }
 if (wgAction!='edit' && wgAction!='submit')
 {
-//	addOnloadHook(addReplyLinks);
+	addOnloadHook(addReplyLinks);
 }
 
 var rep_links_version = rep_links_ver = tmp_VERSION;
