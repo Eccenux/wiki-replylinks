@@ -11,7 +11,7 @@
                 http://opensource.org/licenses/gpl-license.php
 \* ------------------------------------------------------------------------ */
 //  wersja:
-	var tmp_VERSION = '1.5.4';  // = rep_links_version = rep_links_ver
+	var tmp_VERSION = '1.5.5';  // = rep_links_version = rep_links_ver
 // ------------------------------------------------------------------------ //
 
 if (wgAction=='edit')
@@ -256,7 +256,7 @@ function addReplyLinks()
 				newA.appendChild(document.createTextNode('['+textReplyLinkName+']'))
 				newEl.appendChild(newA);
 				insertAfterGivenElement(a[i],newEl);
-				i++;	// a is a dynamic list
+				//i++;	// a is a dynamic list
 				// Anonimous whois checker
 				if (anonimous)
 				{
@@ -265,7 +265,7 @@ function addReplyLinks()
 					newA.setAttribute('title', 'IP whois');
 					newA.appendChild(document.createTextNode('[?]'))
 					newEl.appendChild(newA); // appending to previously created
-					i++;	// a is a dynamic list
+					//i++;	// a is a dynamic list
 				}
 			}
 		}
