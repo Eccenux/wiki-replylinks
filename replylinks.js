@@ -6,12 +6,12 @@
         + adding reply links near user links
         + inserting text given in newsectionname (as PHP param in the location string of the page)
 	
-    Copyright:  ©2006-2009 Maciej Jaros (pl:User:Nux, en:User:EcceNux)
+    Copyright:  ©2006-2010 Maciej Jaros (pl:User:Nux, en:User:EcceNux)
      Licencja:  GNU General Public License v2
                 http://opensource.org/licenses/gpl-license.php
 \* ------------------------------------------------------------------------ */
 //  wersja:
-	var tmp_VERSION = '1.5.5';  // = rep_links_version = rep_links_ver
+	var tmp_VERSION = '1.5.6';  // = rep_links_version = rep_links_ver
 // ------------------------------------------------------------------------ //
 
 if (wgAction=='edit')
@@ -227,7 +227,7 @@ function addReplyLinks()
 		if (a[i].nodeName.toLowerCase()=='a' && a[i].href != '' && a[i].getAttribute('href').indexOf('#')==-1)
 		{
 			var anonimous = false;
-			var matches = (a[i].className=='new') ? reHrefNew.exec(a[i].href) : reHref.exec(a[i].href);
+			var matches = (a[i].className.indexOf('new')>=0) ? reHrefNew.exec(a[i].href) : reHref.exec(a[i].href);
 			if (!matches)
 			{
 				matches = reHrefAnonim.exec(a[i].href);
