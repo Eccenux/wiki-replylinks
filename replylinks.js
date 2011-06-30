@@ -8,7 +8,7 @@
 		- adding reply links near user links
 		- inserting text given in newsectionname (as PHP param in the location string of the page)
 
-    Copyright:  ©2006-2010 Maciej Jaros (pl:User:Nux, en:User:EcceNux)
+    Copyright:  ©2006-2011 Maciej Jaros (pl:User:Nux, en:User:EcceNux)
      Licencja:  GNU General Public License v2
                 http://opensource.org/licenses/gpl-license.php
 
@@ -64,7 +64,7 @@ if (wgAction=='edit' && wgCanonicalNamespace=='User_talk')
 // add links
 if (wgAction!='edit' && wgAction!='submit')
 {
-	addOnloadHook($G.addReplyLinks());
+	addOnloadHook($G.addReplyLinks);
 }
 
 
