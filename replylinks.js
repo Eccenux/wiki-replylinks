@@ -13,6 +13,7 @@
                 http://opensource.org/licenses/gpl-license.php
 
 	@note Please keep MW 1.16 compatible (i.e. do not use mw.config)
+	@note JQuery is required though
 */
 /* -=-=-=-=-=-=-=-=-=-=-=-
 	Object init
@@ -59,12 +60,12 @@ oRepLinks.hrefOnlineIPwhois = 'http://www.ripe.net/perl/whois?form_type=simple&s
 // add text to textbox
 if (wgAction=='edit' && wgCanonicalNamespace=='User_talk')
 {
-	addOnloadHook($G.autoNewSectionName);
+	$($G.autoNewSectionName);
 }
 // add links
 if (wgAction!='edit' && wgAction!='submit')
 {
-	addOnloadHook($G.addReplyLinks);
+	$($G.addReplyLinks);
 }
 
 
