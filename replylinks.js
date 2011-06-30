@@ -1,120 +1,151 @@
-/* ------------------------------------------------------------------------ *\
-    Odpowiedzi z linkami
-         Opis:  http://pl.wikipedia.org/wiki/Wikipedia:Narz%C4%99dzia/Odpowiedzi_z_linkami
+/**
+	@file Odpowiedzi z linkami (Reply links with backtrack links)
 
-    Reply links with backtrack links
-        + adding reply links near user links
-        + inserting text given in newsectionname (as PHP param in the location string of the page)
-	
+	Opis (pl):
+		- http://pl.wikipedia.org/wiki/Wikipedia:Narz%C4%99dzia/Odpowiedzi_z_linkami
+
+    Main functions:
+		- adding reply links near user links
+		- inserting text given in newsectionname (as PHP param in the location string of the page)
+
     Copyright:  ©2006-2010 Maciej Jaros (pl:User:Nux, en:User:EcceNux)
      Licencja:  GNU General Public License v2
                 http://opensource.org/licenses/gpl-license.php
-\* ------------------------------------------------------------------------ */
-//  wersja:
-	var tmp_VERSION = '1.5.6';  // = rep_links_version = rep_links_ver
-// ------------------------------------------------------------------------ //
 
-if (wgAction=='edit')
+	@note Please keep MW 1.16 compatible (i.e. do not use mw.config)
+*/
+/* -=-=-=-=-=-=-=-=-=-=-=-
+	Object init
+ -=-=-=-=-=-=-=-=-=-=-=- */
+if (typeof(oRepLinks) != 'undefined')
 {
-	addOnloadHook(autoNewSectionName);
+	throw ("oRepLinks already used");
 }
-if (wgAction!='edit' && wgAction!='submit')
-{
-	addOnloadHook(addReplyLinks);
-}
+var oRepLinks = {};
 
-var rep_links_version = rep_links_ver = tmp_VERSION;
+/* -=-=-=-=-=-=-=-=-=-=-=-
+	Version
+ -=-=-=-=-=-=-=-=-=-=-=- */
+oRepLinks.version = oRepLinks.ver = '1.6.0';
+
+/* -=-=-=-=-=-=-=-=-=-=-=-
+	Preferences
+ -=-=-=-=-=-=-=-=-=-=-=- */
+// i18n
+oRepLinks.i18n = {'':''
+	,'en' : {'':''
+		,'std prefix'        : 'Re:'   // standard prefix to a replay
+		,'no section prefix' : 'Ad:'   // prefix shown when a section header was not found
+		,'reply link text'   : 'reply'
+	}
+	,'pl' : {'':''
+		,'std prefix'        : 'Odp:'
+		,'no section prefix' : 'Ad:'
+		,'reply link text'   : 'odp'
+	}
+};
+// IP will be added to the end to create a working link
+oRepLinks.hrefOnlineIPwhois = 'http://www.ripe.net/perl/whois?form_type=simple&searchtext=';
+
+/* -=-=-=-=-=-=-=-=-=-=-=-
+	Gadget code
+	$G = oRepLinks
+ -=-=-=-=-=-=-=-=-=-=-=- */
+(function($G){
 
 //
-// Settings
-//                                                 
-var hrefUserAnonim = wgServer + '/wiki/Specjalna:(?:Contributions|Wk%C5%82ad)*/';
-// en: '/w/index.php\\?title=Specjal:Contributions\\&target=';
-var hrefUserSpaced = wgServer + '/wiki/Wikipedysta:';
-// en: '/wiki/User:';
-var hrefUserSpacedNew =  wgServer + '/w/index.php\\?title=Wikipedysta:';
-// en: '/w/index.php\\?title=User:';
-var hrefUserTalkSpaced = wgServer + '/wiki/Dyskusja_Wikipedysty:';
-// en: '/wiki/User_talk:';
-var textReplyShort = 'Odp:';
-// en: 'Re:';
-var textNoHeadShort = 'Ad:';
-// en: 'Ad:';
-var textReplyLinkName = 'odp';
-// en: 'reply';
-
-// IP will be added to the end to create a working link
-var hrefOnlineIPwhois = 'http://www.ripe.net/perl/whois?form_type=simple&searchtext=';
-
-/*
-botname->username
-
-http://pl.wikipedia.org/w/index.php?title=Wikipedia:Boty&action=edit&section=3
-...tableinfo\|([^|]+)\|[^\[\]]+\[\[(?:User|Wikipedysta):([^\[\]\|]+).*
-'$1':'$2',
-*/
-var trbots = {
-'A.bot':'A.',
-'Adas_bot':'Adziura',
-'AlohaBOT':'Patrol110',
-'AutoBot':'WarX',
-'Beau.bot':'Beau',
-'Beau.bot.admin':'Beau',
-'Bluebot':'Blueshade',
-'BOTiczelli':'ABX',
-'Bugbot':'Lcamtuf',
-'BzBot':'BeŻet',
-'ClueBot':'Mathel',
-'Cookie.bot':'Jwitos',
-'DodekBot':'Dodek',
-'DonnerJack.bot':'ABach',
-'EgonBOT':'Egon',
-'EquadusBot':'Equadus',
-'Faxebot':'Faxe',
-'g.bot':'gregul',
-'Holek.Bot':'Holek',
-'Jozef-k.bot':'Jozef-k',
-'KamikazeBot':'Karol007',
-'KangelBot':'Kangel',
-'Kbot':'Kb',
-'LA2-bot':'LA2',
-'LeafBot':'Leafnode',
-'MalarzBOT':'malarz_pl',
-'Margosbot':'Margos',
-'MastiBot':'Masti',
-'MatmaBot':'Matma_Rex',
-'McBot':'McMonster',
-'MiszaBot':'Misza13',
-'Miner':'Saper',
-'NickyBot':'Wpedzich',
-'OdderBot':'Odder',
-'Ohtnim':'Mintho',
-'Olafbot':'Olaf',
-'OldEnt.bot':'Grzegorz_Dąbrowski',
-'PowerBot':'Powerek38',
-'RooBot':'Roo72',
-'Staszek_Jest_Jeszcze_Szybszy':'Staszek_Szybki_Jest',
-'Stv.bot':'Stv',
-'Sunridin.bot':'Sunridin',
-'Szczepan.bot':'Szczepan1990',
-'Tawbot':'Taw',
-'Tsca.bot':'Tsca',
-'VindiBot':'Vindicator',
-'WarXboT':'WarX',
-'WiktorynBot':'Wiktoryn',
-'YarluBot':'Yarl'
+// Init
+//
+// add text to textbox
+if (wgAction=='edit' && wgCanonicalNamespace=='User_talk')
+{
+	addOnLoadHook($G.autoNewSectionName);
+}
+// add links
+if (wgAction!='edit' && wgAction!='submit')
+{
+	addOnLoadHook($G.addReplyLinks());
 }
 
-/* ===================================================== *\
-	Function: autoNewSectionName
-	
-	Inserting new section name and some info from the location string param.
-	
-	Params
-	------
-		newsectionname - passed through the location string of the page
-\* ===================================================== */
-function autoNewSectionName()
+
+//
+// i18n setup
+//
+$G.Lang = "en";
+if (wgUserLanguage in $G.i18n)
+{
+	$G.Lang = wgUserLanguage;
+}
+$G.i18n = $G.i18n[$G.Lang];
+
+//
+// Technical Settings
+//
+//! @warning avoid using catching parenthesis by adding "?:"
+// 'http://.../wiki/User:';
+$G.strReHrefBase          = wgServer + wgArticlePath.replace('$1', encodeURIComponent(wgFormattedNamespaces[2])) + ':';
+// 'http://.../w/index.php\\?title=User:';
+$G.strReHrefNewBase       = wgServer + wgScript + '\\?title=' + encodeURIComponent(wgFormattedNamespaces[2]) + ':';
+// 'http://.../wiki/Specjal:Contributions';
+$G.strReHrefAnonimBase    = wgServer + wgArticlePath.replace('$1', encodeURIComponent(wgFormattedNamespaces[-1])) + ':(?:Contributions|Wk%C5%82ad)/';
+// 'http://.../wiki/User_talk:';
+$G.strBaseUserTalkURL     = wgServer + wgArticlePath.replace('$1', encodeURIComponent(wgFormattedNamespaces[3])) + ':';
+
+/*
+http://pl.wikipedia.org/w/index.php?title=Wikipedia:Boty&action=edit&section=2
+...tableinfo\|([^|]+)\|[^\[\]]+\[\[(?:User|Wikipedysta):([^\[\]\|]+).*
+,'$1':'$2'
+*/
+$G.oBotToOwner = {'':''
+,'Ab.awbot':'Abronikowski'
+,'AkBot':'Ankry'
+,'AlohaBOT':'Patrol110'
+,'AutoPur':'Pur'
+,'Beau.bot':'Beau'
+,'Beau.bot.admin':'Beau'
+,'Bluebot':'Blueshade'
+,'BotOks':'Skalee'
+,'Bugbot':'Lcamtuf'
+,'Cookie.bot':'Jwitos'
+,'DodekBot':'Dodek'
+,'g.bot':'gregul'
+,'Holek.Bot':'Holek'
+,'KamikazeBot':'Karol007'
+,'Kbot':'Kb'
+,'Lambot':'Lampak'
+,'LeafBot':'Leafnode'
+,'MagulBot':'Magul'
+,'MalarzBOT':'malarz_pl'
+,'MastiBot':'Masti'
+,'MatmaBot':'Matma_Rex'
+,'MBot':'maikking'
+,'McBot':'McMonster'
+,'Merdis.bot':'Merdis'
+,'MiszaBot':'Misza13'
+,'Miner':'Saper'
+,'NickyBot':'Wpedzich'
+,'PowerBot':'Powerek38'
+,'RooBot':'Roo72'
+,'RewersBot':'Awersowy'
+,'Staszek_Jest_Jeszcze_Szybszy':'Staszek_Szybki_Jest'
+,'Szczepan.bot':'Szczepan1990'
+,'TAMMBot':'TAMM'
+,'ToBot':'ToSter'
+,'Trivelt.bot':'Trivelt'
+,'tsca.bot':'Tsca'
+,'Ver-bot':'Verwolff'
+,'VindiBot':'Vindicator'
+,'WarXboT':'WarX'
+,'WiktorynBot':'Wiktoryn'
+,'YarluBot':'Yarl'
+};
+
+/**
+	@brief Inserting new section name and some info from the location string param.
+
+	@note newsectionname url param used
+*/
+$G.autoNewSectionName = function()
 {
 	//
 	// Get input element for section name (now understood as the textbox)
@@ -134,7 +165,7 @@ function autoNewSectionName()
 			sectxt = decodeURIComponent(matches[1]);
 			elInput.value += ';'+sectxt+'\n\n';
 		}
-		
+
 		//
 		// Add some summary
 		elInput = document.getElementById('wpSummary');
@@ -143,56 +174,51 @@ function autoNewSectionName()
 			matches = /[ ](.*)\]/.exec(sectxt);
 			// append to input if all OK
 			if (matches)
-				elInput.value += decodeURIComponent(matches[1])
-			;
+			{
+				elInput.value += decodeURIComponent(matches[1]);
+			}
 		}
 	}
-}
+};
 
-/* ===================================================== *\
-	Function: addReplyLinks
-	
-	Adding reply links near user links.
-	
-	Params
-	------
-		none
-\* ===================================================== */
-function addReplyLinks()
+/**
+	@brief Adding reply links near user links.
+*/
+$G.addReplyLinks = function()
 {
 	//
 	// When to run this...
 	//
 	// if (!document.getElementById('t-permalink') && !document.getElementById('t-ispermalink') )	// almost always
 	if (wgCurRevisionId==0)	// no versioning available
-		return
-	;
-
-	var i;
+	{
+		return;
+	}
 
 	//
 	// Get viewed page version link (may be something in history)
 	//
+	var hrefPermalink;
 	// this one means it is a perma link (comparing versions, showing one specfic version and such)
 	if (document.location.href.indexOf('&oldid=')!=-1)
 	{
-		var hrefPermalink = document.location.href.replace(/#.+$/,'');
+		hrefPermalink = document.location.href.replace(/#.+$/,'');
 	}
 	// get latest
 	else
 	{
-		var hrefPermalink = '{{fullurl:' + wgPageName + '|oldid=' + wgCurRevisionId + '}}';
+		hrefPermalink = '{{fullurl:' + wgPageName + '|oldid=' + wgCurRevisionId + '}}';
 	}
-	
+
 	//
 	// Find user pages links and put links into them
 	//
-	
+
 	//
 	// create regexpes for user links
-	var reHref = new RegExp (hrefUserSpaced + "([^/]*)$", "i");	// with ignore case
-	var reHrefNew = new RegExp (hrefUserSpacedNew + "([^/?&]*)", "i");	// with ignore case
-	var reHrefAnonim = new RegExp (hrefUserAnonim + "([\.0-9]*)$");
+	var reHref = new RegExp ($G.strReHrefBase + "([^/]*)$", "i");	// with ignore case
+	var reHrefNew = new RegExp ($G.strReHrefNewBase + "([^/?&]*)", "i");	// with ignore case
+	var reHrefAnonim = new RegExp ($G.strReHrefAnonimBase + "([\\.0-9]*)$");
 
 	var content = document.getElementById('content');
 	if (!content)
@@ -209,18 +235,18 @@ function addReplyLinks()
 	{
 		bodyContent = document.getElementById('mw_contentholder');	// moder skin
 	}
-	
+
 	//
 	// first header as a default section
-	var secAbove = new Object;
-	secAbove.id = bodyContent_id;
-	secAbove.text = parseSectionText(document.getElementsByTagName('H1')[0].innerHTML);
-	var secReplyText = textNoHeadShort;
+	var secAbove = {
+		'id' : bodyContent_id,
+		'text' : $G.parseSectionText(wgPageName)
+	};
+	var secReplyText = $G.i18n['no section prefix'];
 	//
 	// in search for links... and sections
-	//var a = bodyContent.getElementsByTagName('A');
-	var a = qm_getElementsByTagNames ('A,SPAN',bodyContent);
-	for (i = 0; i < a.length; i++)
+	var a = $G.getElementsByTagNames ('A,SPAN', bodyContent);
+	for (var i = 0; i < a.length; i++)
 	{
 		//
 		// checking if this is a user link
@@ -234,9 +260,9 @@ function addReplyLinks()
 				anonimous = true;
 			}
 			// botname translation due to match with nonanonimous link
-			else if (trbots[matches[1]] != undefined)
+			else if ($G.oBotToOwner[matches[1]] != undefined)
 			{
-				matches[1] = trbots[matches[1]];
+				matches[1] = $G.oBotToOwner[matches[1]];
 			}
 
 			if (matches)
@@ -244,7 +270,7 @@ function addReplyLinks()
 				//
 				// creating reply href
 				// var userName = matches[1];
-				var hrefReply = hrefUserTalkSpaced + matches[1] + '?action=edit&section=new';
+				var hrefReply = $G.strBaseUserTalkURL + matches[1] + '?action=edit&section=new';
 				//
 				// and now to create and add data for the new reply section name
 				var newSectionName = '['+hrefPermalink+'#'+secAbove.id+' '+secReplyText+secAbove.text+']';
@@ -252,18 +278,18 @@ function addReplyLinks()
 				var newEl = document.createElement('small');
 				var newA = document.createElement('a');
 				newA.setAttribute('href', hrefReply);
-				newA.setAttribute('title', textReplyShort+secAbove.text);
-				newA.appendChild(document.createTextNode('['+textReplyLinkName+']'))
+				newA.setAttribute('title', $G.i18n['std prefix']+secAbove.text);
+				newA.appendChild(document.createTextNode('['+$G.i18n['reply link text']+']'));
 				newEl.appendChild(newA);
-				insertAfterGivenElement(a[i],newEl);
-				//i++;	// a is a dynamic list
+				$G.insertAfterGivenElement(a[i],newEl);
+
 				// Anonimous whois checker
 				if (anonimous)
 				{
 					newA = document.createElement('a');
-					newA.setAttribute('href', hrefOnlineIPwhois+matches[1]);
+					newA.setAttribute('href', $G.hrefOnlineIPwhois+matches[1]);
 					newA.setAttribute('title', 'IP whois');
-					newA.appendChild(document.createTextNode('[?]'))
+					newA.appendChild(document.createTextNode('[?]'));
 					newEl.appendChild(newA); // appending to previously created
 					//i++;	// a is a dynamic list
 				}
@@ -289,9 +315,9 @@ function addReplyLinks()
 			{
 				secAbove.id = a[i].id;
 				// sometimes there could be a link in the header (maybe some more)
-				secAbove.text = parseSectionText(header.innerHTML);
+				secAbove.text = $G.parseSectionText(header.innerHTML);
 				// should be set only once (as it is always the same), but let's leave it that way
-				secReplyText = textReplyShort;
+				secReplyText = $G.i18n['std prefix'];
 				//header.innerHTML = '['+secAbove.id+'@'+found+']&rarr;'+secAbove.text;
 			}
 		}
@@ -301,25 +327,23 @@ function addReplyLinks()
 		{
 			secAbove.id = a[i].id;
 			// sometimes there could be a link in the header (maybe some more)
-			secAbove.text = parseSectionText(a[i].innerHTML);
+			secAbove.text = $G.parseSectionText(a[i].innerHTML);
 			// should be set only once (as it is always the same), but let's leave it that way
-			secReplyText = textReplyShort;
+			secReplyText = $G.i18n['std prefix'];
 			//header.innerHTML = '['+secAbove.id+'@'+found+']&rarr;'+secAbove.text;
 		}
 	}
-}
+};
 
-/* ===================================================== *\
-	Function: insertAfterGivenElement
-	
-	Inserting "newEl" element after given "el" element.
-	
-	Params
-	------
-		el - element object to insert after
-		newEl - (new) element object to insert
+/**
+	@brief Inserting \a newEl element after given \a el element.
+
+	@param el
+		Element object to insert after
+	@param newEl
+		(new) element object to insert
 \* ===================================================== */
-function insertAfterGivenElement(el, newEl)
+$G.insertAfterGivenElement = function (el, newEl)
 {
 	if (el.nextSibling)
 	{
@@ -329,35 +353,18 @@ function insertAfterGivenElement(el, newEl)
 	{
 		el.parentNode.appendChild(newEl);
 	}
-}
+};
 
-/* ===================================================== *\
-	Function: [obsolete] stripHtmlTags
-	
-	Stripping HTML tags from the HTML text.
-	Returns stripped text.
-	
-	Params
-	------
-		html - the html text
-\* ===================================================== */
-function stripHtmlTags(html)
-{
-	return html.replace(/<\S[^<>]*>/g, ''); // with global match (all will be replaced)
-}
+/**
+	@brief Parses Section HTML to Text
 
-/* ===================================================== *\
-	Function: parseSectionText
-	
-	Stripping HTML tags from the HTML text and cleansing 
-	of some wikicode
-	Returns stripped text.
-	
-	Params
-	------
-		html - the html text
-\* ===================================================== */
-function parseSectionText(html)
+	Stripping HTML tags from the HTML text and cleansing of some wikicode
+
+	@param html
+		The html string
+	@returns Stripped text
+*/
+$G.parseSectionText = function (html)
 {
 	// with global match (all will be replaced)
 	html = html.replace(/<\S[^<>]*>/g, '');
@@ -366,47 +373,51 @@ function parseSectionText(html)
 	// replace wiki stuff with null
 	html = html.replace(/[\{\}]/g,'');
 	// trim (right,left)
-	html = html.replace(/[ \t]*$/,'').replace(/^[ \t]*/,'');
-	return html
-}
+	html =  html.replace(/[ \t]*$/,'').replace(/^[ \t]*/,'');
+	return html;
+};
 
-/* -------------------------------------------------------- *\
-	Pobiera elementy o nazwach podanych na liście
-	
-	Elementy zwracane są w kolejności występowania 
-	w dokumencie.
-	
-	obj - element wzg. którego pobierać elementy z listy
-	jak w obj.getElementsByTagName('el.name')
-\* -------------------------------------------------------- */
-if (typeof(qm_getElementsByTagNames)!='function')
+/**
+	@brief Pobiera elementy o nazwach podanych na liście
+
+	Elementy zwracane są w kolejności występowania w dokumencie.
+
+	@param list
+		CSV list of tag names
+	@param obj [optional]
+		Element wzg. którego pobierać elementy z listy
+		jak w obj.getElementsByTagName('el.name')
+*/
+$G.getElementsByTagNames = function (list, obj)
 {
-	function qm_getElementsByTagNames (list,obj)
+	if (!obj) obj = document;
+	var tagNames = list.split(',');
+	var resultArray = new Array();
+	for (var i=0;i<tagNames.length;i++)
 	{
-		if (!obj) obj = document;
-		var tagNames = list.split(',');
-		var resultArray = new Array();
-		for (var i=0;i<tagNames.length;i++)
+		var tags = obj.getElementsByTagName(tagNames[i]);
+		for (var j=0;j<tags.length;j++)
 		{
-			var tags = obj.getElementsByTagName(tagNames[i]);
-			for (var j=0;j<tags.length;j++)
-			{
-				resultArray.push(tags[j]);
-			}
+			resultArray.push(tags[j]);
 		}
-		var testNode = resultArray[0];
-		if (testNode.sourceIndex)
-		{
-			resultArray.sort(function (a,b) {
-					return a.sourceIndex - b.sourceIndex;
-			});
-		}
-		else if (testNode.compareDocumentPosition)
-		{
-			resultArray.sort(function (a,b) {
-					return 3 - (a.compareDocumentPosition(b) & 6);
-			});
-		}
-		return resultArray;
 	}
-}
+	var testNode = resultArray[0];
+	if (testNode.sourceIndex)
+	{
+		resultArray.sort(function (a,b) {
+				return a.sourceIndex - b.sourceIndex;
+		});
+	}
+	else if (testNode.compareDocumentPosition)
+	{
+		resultArray.sort(function (a,b) {
+				return 3 - (a.compareDocumentPosition(b) & 6);
+		});
+	}
+	return resultArray;
+};
+
+/* -=-=-=-=-=-=-=-=-=-=-=-
+	Gadget code : END
+ -=-=-=-=-=-=-=-=-=-=-=- */
+})(oRepLinks);
