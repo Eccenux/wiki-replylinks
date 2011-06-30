@@ -59,12 +59,12 @@ oRepLinks.hrefOnlineIPwhois = 'http://www.ripe.net/perl/whois?form_type=simple&s
 // add text to textbox
 if (wgAction=='edit' && wgCanonicalNamespace=='User_talk')
 {
-	addOnLoadHook($G.autoNewSectionName);
+	addOnloadHook($G.autoNewSectionName);
 }
 // add links
 if (wgAction!='edit' && wgAction!='submit')
 {
-	addOnLoadHook($G.addReplyLinks());
+	addOnloadHook($G.addReplyLinks());
 }
 
 
