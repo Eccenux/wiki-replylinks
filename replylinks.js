@@ -18,7 +18,7 @@
 /* -=-=-=-=-=-=-=-=-=-=-=-
 	Object init
  -=-=-=-=-=-=-=-=-=-=-=- */
-if (typeof(oRepLinks) != 'undefined')
+if (typeof(window.oRepLinks) != 'undefined')
 {
 	throw ("oRepLinks already used");
 }
@@ -27,7 +27,7 @@ var oRepLinks = {};
 /* -=-=-=-=-=-=-=-=-=-=-=-
 	Version
  -=-=-=-=-=-=-=-=-=-=-=- */
-oRepLinks.version = oRepLinks.ver = '1.6.0';
+oRepLinks.version = oRepLinks.ver = '1.6.1';
 
 /* -=-=-=-=-=-=-=-=-=-=-=-
 	Preferences
@@ -53,21 +53,6 @@ oRepLinks.hrefOnlineIPwhois = 'http://www.ripe.net/perl/whois?form_type=simple&s
 	$G = oRepLinks
  -=-=-=-=-=-=-=-=-=-=-=- */
 (function($G){
-
-//
-// Init
-//
-// add text to textbox
-if (wgAction=='edit' && wgCanonicalNamespace=='User_talk')
-{
-	$($G.autoNewSectionName);
-}
-// add links
-if (wgAction!='edit' && wgAction!='submit')
-{
-	$($G.addReplyLinks);
-}
-
 
 //
 // i18n setup
@@ -406,17 +391,31 @@ $G.getElementsByTagNames = function (list, obj)
 	if (testNode.sourceIndex)
 	{
 		resultArray.sort(function (a,b) {
-				return a.sourceIndex - b.sourceIndex;
+			return a.sourceIndex - b.sourceIndex;
 		});
 	}
 	else if (testNode.compareDocumentPosition)
 	{
 		resultArray.sort(function (a,b) {
-				return 3 - (a.compareDocumentPosition(b) & 6);
+			return 3 - (a.compareDocumentPosition(b) & 6);
 		});
 	}
 	return resultArray;
 };
+
+//
+// Init
+//
+// add text to textbox
+if (wgAction=='edit' && wgCanonicalNamespace=='User_talk')
+{
+	$($G.autoNewSectionName);
+}
+// add links
+if (wgAction!='edit' && wgAction!='submit')
+{
+	$($G.addReplyLinks);
+}
 
 /* -=-=-=-=-=-=-=-=-=-=-=-
 	Gadget code : END
