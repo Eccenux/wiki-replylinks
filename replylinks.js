@@ -14,6 +14,7 @@
 
 	@note Please keep MW 1.16 compatible (i.e. do not use mw.config)
 	@note JQuery is required though
+	@note dev version contains more commnets see: http://pl.wikipedia.org/w/index.php?title=Wikipedysta:Nux/replylinks.dev.js
 */
 /* -=-=-=-=-=-=-=-=-=-=-=-
 	Object init
