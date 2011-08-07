@@ -28,7 +28,7 @@ var oRepLinks = {};
 /* -=-=-=-=-=-=-=-=-=-=-=-
 	Version
  -=-=-=-=-=-=-=-=-=-=-=- */
-oRepLinks.version = oRepLinks.ver = '1.6.1';
+oRepLinks.version = oRepLinks.ver = '1.6.2';
 
 /* -=-=-=-=-=-=-=-=-=-=-=-
 	Preferences
@@ -318,6 +318,24 @@ $G.addReplyLinks = function()
 			// should be set only once (as it is always the same), but let's leave it that way
 			secReplyText = $G.i18n['std prefix'];
 			//header.innerHTML = '['+secAbove.id+'@'+found+']&rarr;'+secAbove.text;
+		}
+		//
+		// strip section numering
+		if (secAbove.text.search(/^[0-9]+ /) > -1)
+		{
+			debugger;
+			var isNumbered = true;
+			if (secAbove.id.search(/^[0-9]+_/) > -1)
+			{
+				if (secAbove.text.replace(/^([0-9 ]+) .*/, '$1').length == secAbove.id.replace(/^([0-9_]+)_.*/, '$1').length)
+				{
+					isNumbered = false;
+				}
+			}
+			if (isNumbered)
+			{
+				secAbove.text = secAbove.text.replace(/^[0-9]+ (.*)/, '$1');
+			}
 		}
 	}
 };
