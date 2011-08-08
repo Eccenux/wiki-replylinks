@@ -13,8 +13,8 @@
                 http://opensource.org/licenses/gpl-license.php
 
 	@note Please keep MW 1.16 compatible (i.e. do not use mw.config)
-	@note JQuery is required though
-	@note dev version contains more commnets see: http://pl.wikipedia.org/w/index.php?title=Wikipedysta:Nux/replylinks.dev.js
+	@note jQuery is required though
+	@note Dev version contains more comments see: http://pl.wikipedia.org/wiki/Wikipedysta:Nux/replylinks.dev.js
 */
 /* -=-=-=-=-=-=-=-=-=-=-=-
 	Object init
@@ -28,7 +28,7 @@ var oRepLinks = {};
 /* -=-=-=-=-=-=-=-=-=-=-=-
 	Version
  -=-=-=-=-=-=-=-=-=-=-=- */
-oRepLinks.version = oRepLinks.ver = '1.6.2';
+oRepLinks.version = oRepLinks.ver = '1.6.3';
 
 /* -=-=-=-=-=-=-=-=-=-=-=-
 	Preferences
@@ -321,20 +321,19 @@ $G.addReplyLinks = function()
 		}
 		//
 		// strip section numering
-		if (secAbove.text.search(/^[0-9]+ /) > -1)
+		if (secAbove.text.search(/^[0-9.]+ /) > -1)
 		{
-			debugger;
 			var isNumbered = true;
-			if (secAbove.id.search(/^[0-9]+_/) > -1)
+			if (secAbove.id.search(/^[0-9.]+_/) > -1)
 			{
-				if (secAbove.text.replace(/^([0-9 ]+) .*/, '$1').length == secAbove.id.replace(/^([0-9_]+)_.*/, '$1').length)
+				if (secAbove.text.replace(/^([0-9. ]+) .*/, '$1').length == secAbove.id.replace(/^([0-9._]+)_.*/, '$1').length)
 				{
 					isNumbered = false;
 				}
 			}
 			if (isNumbered)
 			{
-				secAbove.text = secAbove.text.replace(/^[0-9]+ (.*)/, '$1');
+				secAbove.text = secAbove.text.replace(/^[0-9.]+ (.*)/, '$1');
 			}
 		}
 	}
