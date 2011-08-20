@@ -28,7 +28,7 @@ var oRepLinks = {};
 /* -=-=-=-=-=-=-=-=-=-=-=-
 	Version
  -=-=-=-=-=-=-=-=-=-=-=- */
-oRepLinks.version = oRepLinks.ver = '1.6.3';
+oRepLinks.version = oRepLinks.ver = '1.6.4alfa';
 
 /* -=-=-=-=-=-=-=-=-=-=-=-
 	Preferences
@@ -239,6 +239,7 @@ $G.addReplyLinks = function()
 		// checking if this is a user link
 		if (a[i].nodeName.toLowerCase()=='a' && a[i].href != '' && a[i].getAttribute('href').indexOf('#')==-1)
 		{
+			nux_debug("section:"+secAbove.text+"; link:"+a[i].innerHTML);
 			var anonimous = false;
 			var matches = (a[i].className.indexOf('new')>=0) ? reHrefNew.exec(a[i].href) : reHref.exec(a[i].href);
 			if (!matches)
@@ -292,6 +293,7 @@ $G.addReplyLinks = function()
 			var found;
 			for (found=3; found; found--)	// max 3 forward
 			{
+				nux_debug("header?:"+header.nodeName);
 				header = header.nextSibling;
 				if (header!=null && header.nodeType==document.ELEMENT_NODE && header.nodeName.search(/h[0-9]/i)==0)
 				{
