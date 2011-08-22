@@ -1,48 +1,4 @@
 /**
-	nux debug
-*/
-var nuD = {
-	elTop:null
-	,
-	arrMsgs:[]
-	,
-	init: function()
-	{
-		//var nel = document.createElement('div')
-		var nel = document.createElement('textarea')
-		nel.style.cssText = ''
-			+'position:absolute;'
-			+'left:0px;'
-			+'top:0px;'
-			+'width:100%;'
-			+'height:200px;'
-			+'overflow:scroll;'
-			+'background-color:white;'
-		;
-		document.body.appendChild(nel);
-		this.elTop = nel;
-	}
-	,
-	add: function(str)
-	{
-		this.arrMsgs.push(str)
-	}
-	,
-	show: function()
-	{
-		//this.elTop.innerHTML = "<li>" + this.arrMsgs.join("<li>");
-		/*
-		var nel = document.createElement('textarea');
-		this.elTop.appendChild(nel);
-		nel.value = this.arrMsgs.join("\r\n");
-		*/
-		this.elTop.value = this.arrMsgs.join("\r\n");
-	}
-}
-jQuery(function(){nuD.init();});
-
-
-/**
 	@file Odpowiedzi z linkami (Reply links with backtrack links)
 
 	Opis (pl):
@@ -72,7 +28,7 @@ var oRepLinks = {};
 /* -=-=-=-=-=-=-=-=-=-=-=-
 	Version
  -=-=-=-=-=-=-=-=-=-=-=- */
-oRepLinks.version = oRepLinks.ver = '1.6.4alpha';
+oRepLinks.version = oRepLinks.ver = '1.6.4';
 
 /* -=-=-=-=-=-=-=-=-=-=-=-
 	Preferences
@@ -329,12 +285,6 @@ $G.addReplyLinks = function()
 
 		//
 		// a little hunt for sections (anchor and text of the section above user links
-		nuD.add(''
-			+ ' a[i].nodeName.toLowerCase():' + a[i].nodeName.toLowerCase()
-			+ ' wgNamespaceNumber:' + wgNamespaceNumber
-			+ ' a[i].id:' + a[i].id
-			+ ' a[i].parentNode.nodeName:' + a[i].parentNode.nodeName
-		);
 		if (a[i].nodeName.toLowerCase()=='a' && wgNamespaceNumber != 6 && a[i].id != '' && a[i].parentNode.nodeName=='P') // skip obtaining headers on image pages and non-header links
 		{
 			var header = a[i].parentNode;
@@ -387,7 +337,6 @@ $G.addReplyLinks = function()
 			}
 		}
 	}
-	nuD.show();
 };
 
 /**
@@ -445,48 +394,8 @@ $G.parseSectionText = function (html)
 */
 $G.getElementsByTagNames = function (list, obj)
 {
-	/*
-	if (!obj) obj = document;
-	var tagNames = list.split(',');
-	var resultArray = new Array();
-	for (var i=0;i<tagNames.length;i++)
-	{
-		var tags = obj.getElementsByTagName(tagNames[i]);
-		for (var j=0;j<tags.length;j++)
-		{
-			resultArray.push(tags[j]);
-		}
-	}
-	nuD.add('[pre]\r\n'
-		+'resultArray.join(...):\r\n'+resultArray.join("\r\n")
-	);
-	var testNode = resultArray[0];
-	if (testNode.sourceIndex)
-	{
-		nuD.add('!sourceIndex!');
-		resultArray.sort(function (a,b) {
-			nuD.add('cmp:'
-				+' a.nn:' + a.nodeName
-				+' b.nn:' + b.nodeName
-				+' a.si:' + a.sourceIndex
-				+' b.si:' + b.sourceIndex
-			);
-			return a.sourceIndex - b.sourceIndex;
-		});
-	}
-	else if (testNode.compareDocumentPosition)
-	{
-		nuD.add('!compareDocumentPosition!');
-		resultArray.sort(function (a,b) {
-			return 3 - (a.compareDocumentPosition(b) & 6);
-		});
-	}
-	nuD.add('[post]\r\n'
-		+'resultArray.join(...):\r\n'+resultArray.join("\r\n")
-	);
-	*/
-	// for some reason sourceIndex doesn't work in Opera when NOT in debug mode...
-	// so we try jQuery...
+	// for some reason sourceIndex doesn't work in Opera when NOT in debug mode (returns -1)...
+	// so we use jQuery...
 	var resultArray = new Array();
 	$(list, obj).each(function(){
 		resultArray.push(this);
@@ -500,12 +409,12 @@ $G.getElementsByTagNames = function (list, obj)
 // add text to textbox
 if (wgAction=='edit' && wgCanonicalNamespace=='User_talk')
 {
-	$(window).load($G.autoNewSectionName);
+	$($G.autoNewSectionName);
 }
 // add links
 if (wgAction!='edit' && wgAction!='submit')
 {
-	$(window).load($G.addReplyLinks);
+	$($G.addReplyLinks);
 }
 
 /* -=-=-=-=-=-=-=-=-=-=-=-
