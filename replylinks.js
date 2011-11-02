@@ -28,7 +28,7 @@ var oRepLinks = {};
 /* -=-=-=-=-=-=-=-=-=-=-=-
 	Version
  -=-=-=-=-=-=-=-=-=-=-=- */
-oRepLinks.version = oRepLinks.ver = '1.6.4';
+oRepLinks.version = oRepLinks.ver = '1.6.5';
 
 /* -=-=-=-=-=-=-=-=-=-=-=-
 	Preferences
@@ -65,14 +65,36 @@ if (wgUserLanguage in $G.i18n)
 }
 $G.i18n = $G.i18n[$G.Lang];
 
+/**
+	@brief get all alternative namespaces for given \a namespaceNumber.
+
+	@return array of namespace names (including alternative names)
+*/
+$G.getNamespaceNames = function(namespaceNumber, encodingFunction)
+{
+	var found = [];
+	for (var id in wgNamespaceIds)
+	{
+		if (wgNamespaceIds[id] == namespaceNumber)
+		{
+			if (encodingFunction)
+			{
+				id = encodingFunction(id);
+			}
+			found.push(id);
+		}
+	}
+	return found;
+}
+
 //
 // Technical Settings
 //
 //! @warning avoid using catching parenthesis by adding "?:"
 // 'http://.../wiki/User:';
-$G.strReHrefBase          = wgServer + wgArticlePath.replace('$1', encodeURIComponent(wgFormattedNamespaces[2])) + ':';
+$G.strReHrefBase          = wgServer + wgArticlePath.replace('$1',  '(?:' + $G.getNamespaceNames(2, encodeURIComponent).join('|') + ')') + ':';
 // 'http://.../w/index.php\\?title=User:';
-$G.strReHrefNewBase       = wgServer + wgScript + '\\?title=' + encodeURIComponent(wgFormattedNamespaces[2]) + ':';
+$G.strReHrefNewBase       = wgServer + wgScript + '\\?title=' + '(?:' + $G.getNamespaceNames(2, encodeURIComponent).join('|') + ')' + ':';
 // 'http://.../wiki/Specjal:Contributions';
 $G.strReHrefAnonimBase    = wgServer + wgArticlePath.replace('$1', encodeURIComponent(wgFormattedNamespaces[-1])) + ':(?:Contributions|Wk%C5%82ad)/';
 // 'http://.../wiki/User_talk:';
