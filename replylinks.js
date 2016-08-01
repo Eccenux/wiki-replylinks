@@ -12,7 +12,7 @@
      Licencja:  GNU General Public License v2
                 http://opensource.org/licenses/gpl-license.php
 
-	@note Please keep MW 1.16 compatible (i.e. do not use mw.config)
+	@note Please keep MW 1.16 compatible (i.e. do not use mw.config directly)
 	@note jQuery is required though
 	@note Dev version contains more comments see: http://pl.wikipedia.org/wiki/Wikipedysta:Nux/replylinks.dev.js
 */
@@ -28,7 +28,7 @@ var oRepLinks = {};
 /* -=-=-=-=-=-=-=-=-=-=-=-
 	Version
  -=-=-=-=-=-=-=-=-=-=-=- */
-oRepLinks.version = oRepLinks.ver = '1.6.7';
+oRepLinks.version = oRepLinks.ver = '1.6.8';
 
 /* -=-=-=-=-=-=-=-=-=-=-=-
 	Preferences
@@ -54,14 +54,26 @@ oRepLinks.hrefOnlineIPwhois = 'http://www.ripe.net/perl/whois?form_type=simple&s
 	$G = oRepLinks
  -=-=-=-=-=-=-=-=-=-=-=- */
 (function($G){
+/**
+	@brief get MediaWiki configuration variable
+	
+	MW 1.16 and 1.17+ compatible
+*/
+$G.getMediaWikiConfig = function(variableName)
+{
+	if (typeof(mw) === 'object' && 'config' in mw) {
+		return mw.config.get(variableName)
+	}
+	return window[variableName];
+}
 
 //
 // i18n setup
 //
 $G.Lang = "en";
-if (wgUserLanguage in $G.i18n)
+if ($G.getMediaWikiConfig('wgUserLanguage') in $G.i18n)
 {
-	$G.Lang = wgUserLanguage;
+	$G.Lang = $G.getMediaWikiConfig('wgUserLanguage');
 }
 $G.i18n = $G.i18n[$G.Lang];
 
@@ -73,9 +85,10 @@ $G.i18n = $G.i18n[$G.Lang];
 $G.getNamespaceNames = function(namespaceNumber, encodingFunction)
 {
 	var found = [];
-	for (var id in wgNamespaceIds)
+	var namespacesIds = $G.getMediaWikiConfig('wgNamespaceIds');
+	for (var id in namespacesIds)
 	{
-		if (wgNamespaceIds[id] == namespaceNumber)
+		if (namespacesIds[id] == namespaceNumber)
 		{
 			if (encodingFunction)
 			{
@@ -92,13 +105,13 @@ $G.getNamespaceNames = function(namespaceNumber, encodingFunction)
 //
 //! @warning avoid using catching parenthesis by adding "?:"
 // 'http://.../wiki/User:';
-$G.strReHrefBase          = wgServer + wgArticlePath.replace('$1',  '(?:' + $G.getNamespaceNames(2, encodeURIComponent).join('|') + ')') + ':';
+$G.strReHrefBase          = $G.getMediaWikiConfig('wgServer') + $G.getMediaWikiConfig('wgArticlePath').replace('$1',  '(?:' + $G.getNamespaceNames(2, encodeURIComponent).join('|') + ')') + ':';
 // 'http://.../w/index.php\\?title=User:';
-$G.strReHrefNewBase       = wgServer + wgScript + '\\?title=' + '(?:' + $G.getNamespaceNames(2, encodeURIComponent).join('|') + ')' + ':';
+$G.strReHrefNewBase       = $G.getMediaWikiConfig('wgServer') + $G.getMediaWikiConfig('wgScript') + '\\?title=' + '(?:' + $G.getNamespaceNames(2, encodeURIComponent).join('|') + ')' + ':';
 // 'http://.../wiki/Specjal:Contributions';
-$G.strReHrefAnonimBase    = wgServer + wgArticlePath.replace('$1', encodeURIComponent(wgFormattedNamespaces[-1])) + ':(?:Contributions|Wk%C5%82ad)/';
+$G.strReHrefAnonimBase    = $G.getMediaWikiConfig('wgServer') + $G.getMediaWikiConfig('wgArticlePath').replace('$1', encodeURIComponent($G.getMediaWikiConfig('wgFormattedNamespaces')[-1])) + ':(?:Contributions|Wk%C5%82ad)/';
 // 'http://.../wiki/User_talk:';
-$G.strBaseUserTalkURL     = wgServer + wgArticlePath.replace('$1', encodeURIComponent(wgFormattedNamespaces[3])) + ':';
+$G.strBaseUserTalkURL     = $G.getMediaWikiConfig('wgServer') + $G.getMediaWikiConfig('wgArticlePath').replace('$1', encodeURIComponent($G.getMediaWikiConfig('wgFormattedNamespaces')[3])) + ':';
 
 /*
 http://pl.wikipedia.org/w/index.php?title=Wikipedia:Boty&action=edit&section=2
@@ -202,7 +215,7 @@ $G.addReplyLinks = function()
 	// When to run this...
 	//
 	// if (!document.getElementById('t-permalink') && !document.getElementById('t-ispermalink') )	// almost always
-	if (wgCurRevisionId==0)	// no versioning available
+	if ($G.getMediaWikiConfig('wgCurRevisionId')==0)	// no versioning available
 	{
 		return;
 	}
@@ -219,7 +232,7 @@ $G.addReplyLinks = function()
 	// get latest
 	else
 	{
-		hrefPermalink = '{{fullurl:' + wgPageName + '|oldid=' + wgCurRevisionId + '}}';
+		hrefPermalink = '{{fullurl:' + $G.getMediaWikiConfig('wgPageName') + '|oldid=' + $G.getMediaWikiConfig('wgCurRevisionId') + '}}';
 	}
 
 	//
@@ -252,7 +265,7 @@ $G.addReplyLinks = function()
 	// first header as a default section
 	var secAbove = {
 		'id' : bodyContent_id,	// for link hash
-		'text' : $G.parseSectionText(wgPageName).replace(/_/g, ' ')	// for display
+		'text' : $G.parseSectionText($G.getMediaWikiConfig('wgPageName')).replace(/_/g, ' ')	// for display
 	};
 	var secReplyText = $G.i18n['no section prefix'];
 	//
@@ -311,7 +324,7 @@ $G.addReplyLinks = function()
 
 		//
 		// a little hunt for sections (anchor and text of the section above user links
-		if (a[i].nodeName.toLowerCase()=='a' && wgNamespaceNumber != 6 && a[i].id != '' && a[i].parentNode.nodeName=='P') // skip obtaining headers on image pages and non-header links
+		if (a[i].nodeName.toLowerCase()=='a' && $G.getMediaWikiConfig('wgNamespaceNumber') != 6 && a[i].id != '' && a[i].parentNode.nodeName=='P') // skip obtaining headers on image pages and non-header links
 		{
 			var header = a[i].parentNode;
 			// moving forward in search for the header
@@ -433,12 +446,12 @@ $G.getElementsByTagNames = function (list, obj)
 // Init
 //
 // add text to textbox
-if (wgAction=='edit' && wgCanonicalNamespace=='User_talk')
+if ($G.getMediaWikiConfig('wgAction')=='edit' && $G.getMediaWikiConfig('wgCanonicalNamespace')=='User_talk')
 {
 	$($G.autoNewSectionName);
 }
 // add links
-if (wgAction!='edit' && wgAction!='submit')
+if ($G.getMediaWikiConfig('wgAction')!='edit' && $G.getMediaWikiConfig('wgAction')!='submit')
 {
 	$($G.addReplyLinks);
 }
