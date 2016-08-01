@@ -8,7 +8,7 @@
 		- adding reply links near user links
 		- inserting text given in newsectionname (as PHP param in the location string of the page)
 
-    Copyright:  ©2006-2011 Maciej Jaros (pl:User:Nux, en:User:EcceNux)
+    Copyright:  ©2006-2016 Maciej Jaros (pl:User:Nux, en:User:EcceNux)
      Licencja:  GNU General Public License v2
                 http://opensource.org/licenses/gpl-license.php
 
@@ -28,7 +28,7 @@ var oRepLinks = {};
 /* -=-=-=-=-=-=-=-=-=-=-=-
 	Version
  -=-=-=-=-=-=-=-=-=-=-=- */
-oRepLinks.version = oRepLinks.ver = '1.6.6';
+oRepLinks.version = oRepLinks.ver = '1.6.7';
 
 /* -=-=-=-=-=-=-=-=-=-=-=-
 	Preferences
@@ -251,8 +251,8 @@ $G.addReplyLinks = function()
 	//
 	// first header as a default section
 	var secAbove = {
-		'id' : bodyContent_id,
-		'text' : $G.parseSectionText(wgPageName)
+		'id' : bodyContent_id,	// for link hash
+		'text' : $G.parseSectionText(wgPageName).replace(/_/, ' ')	// for display
 	};
 	var secReplyText = $G.i18n['no section prefix'];
 	//
