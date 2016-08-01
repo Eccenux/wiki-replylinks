@@ -252,7 +252,7 @@ $G.addReplyLinks = function()
 	// first header as a default section
 	var secAbove = {
 		'id' : bodyContent_id,	// for link hash
-		'text' : $G.parseSectionText(wgPageName).replace(/_/, ' ')	// for display
+		'text' : $G.parseSectionText(wgPageName).replace(/_/g, ' ')	// for display
 	};
 	var secReplyText = $G.i18n['no section prefix'];
 	//
