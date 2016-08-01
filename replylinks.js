@@ -28,7 +28,7 @@ var oRepLinks = {};
 /* -=-=-=-=-=-=-=-=-=-=-=-
 	Version
  -=-=-=-=-=-=-=-=-=-=-=- */
-oRepLinks.version = oRepLinks.ver = '1.6.5';
+oRepLinks.version = oRepLinks.ver = '1.6.6';
 
 /* -=-=-=-=-=-=-=-=-=-=-=-
 	Preferences
@@ -105,7 +105,7 @@ http://pl.wikipedia.org/w/index.php?title=Wikipedia:Boty&action=edit&section=2
 ...tableinfo\|([^|]+)\|[^\[\]]+\[\[(?:User|Wikipedysta):([^\[\]\|]+).*
 ,'$1':'$2'
 */
-$G.oBotToOwner = {'':''
+$G.oBotToOwner = window.oRepLinksCustomB2O || {'':''
 ,'Ab.awbot':'Abronikowski'
 ,'AkBot':'Ankry'
 ,'AlohaBOT':'Patrol110'
@@ -113,8 +113,10 @@ $G.oBotToOwner = {'':''
 ,'Beau.bot':'Beau'
 ,'Beau.bot.admin':'Beau'
 ,'Bluebot':'Blueshade'
+,'BossBot':'The boss'
 ,'BotOks':'Skalee'
 ,'Bugbot':'Lcamtuf'
+,'Bulwersator: bot':'Bulwersator'
 ,'Cookie.bot':'Jwitos'
 ,'DodekBot':'Dodek'
 ,'g.bot':'gregul'
@@ -134,6 +136,7 @@ $G.oBotToOwner = {'':''
 ,'Miner':'Saper'
 ,'NickyBot':'Wpedzich'
 ,'PowerBot':'Powerek38'
+,'Putorobot':'Putoro'
 ,'RooBot':'Roo72'
 ,'RewersBot':'Awersowy'
 ,'Staszek_Jest_Jeszcze_Szybszy':'Staszek_Szybki_Jest'
@@ -286,6 +289,7 @@ $G.addReplyLinks = function()
 				hrefReply += '&newsectionname=' + encodeURIComponent(newSectionName);
 				var newEl = document.createElement('small');
 				var newA = document.createElement('a');
+				newA.className='gadget-replylinks-reply';
 				newA.setAttribute('href', hrefReply);
 				newA.setAttribute('title', $G.i18n['std prefix']+secAbove.text);
 				newA.appendChild(document.createTextNode('['+$G.i18n['reply link text']+']'));
