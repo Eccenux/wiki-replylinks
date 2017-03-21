@@ -8,7 +8,7 @@
 		- adding reply links near user links
 		- inserting text given in newsectionname (as PHP param in the location string of the page)
 
-    Copyright:  ©2006-2016 Maciej Jaros (pl:User:Nux, en:User:EcceNux)
+    Copyright:  ©2006-2017 Maciej Jaros (pl:User:Nux, en:User:EcceNux)
      Licencja:  GNU General Public License v2
                 http://opensource.org/licenses/gpl-license.php
 
@@ -28,7 +28,7 @@ var oRepLinks = {};
 /* -=-=-=-=-=-=-=-=-=-=-=-
 	Version
  -=-=-=-=-=-=-=-=-=-=-=- */
-oRepLinks.version = oRepLinks.ver = '1.6.8';
+oRepLinks.version = oRepLinks.ver = '1.6.9';
 
 /* -=-=-=-=-=-=-=-=-=-=-=-
 	Preferences
@@ -341,7 +341,7 @@ $G.addReplyLinks = function()
 			{
 				secAbove.id = a[i].id;
 				// sometimes there could be a link in the header (maybe some more)
-				secAbove.text = $G.parseSectionText(header.innerHTML);
+				secAbove.text = $G.stripSectionNumbering($G.parseSectionText(header.innerHTML));
 				// should be set only once (as it is always the same), but let's leave it that way
 				secReplyText = $G.i18n['std prefix'];
 				//header.innerHTML = '['+secAbove.id+'@'+found+']&rarr;'+secAbove.text;
@@ -353,27 +353,10 @@ $G.addReplyLinks = function()
 		{
 			secAbove.id = a[i].id;
 			// sometimes there could be a link in the header (maybe some more)
-			secAbove.text = $G.parseSectionText(a[i].innerHTML);
+			secAbove.text = $G.stripSectionNumbering($G.parseSectionText(a[i].innerHTML));
 			// should be set only once (as it is always the same), but let's leave it that way
 			secReplyText = $G.i18n['std prefix'];
 			//header.innerHTML = '['+secAbove.id+'@'+found+']&rarr;'+secAbove.text;
-		}
-		//
-		// strip section numering
-		if (secAbove.text.search(/^[0-9.]+ /) > -1)
-		{
-			var isNumbered = true;
-			if (secAbove.id.search(/^[0-9.]+_/) > -1)
-			{
-				if (secAbove.text.replace(/^([0-9. ]+) .*/, '$1').length == secAbove.id.replace(/^([0-9._]+)_.*/, '$1').length)
-				{
-					isNumbered = false;
-				}
-			}
-			if (isNumbered)
-			{
-				secAbove.text = secAbove.text.replace(/^[0-9.]+ (.*)/, '$1');
-			}
 		}
 	}
 };
@@ -418,6 +401,34 @@ $G.parseSectionText = function (html)
 	// trim (right,left)
 	html =  html.replace(/[ \t]*$/,'').replace(/^[ \t]*/,'');
 	return html;
+};
+
+/**
+	@brief Strips section numbering if present.
+
+	@param sectionText Text oof the section.
+	@param sectionId Id of the section.
+	@returns Stripped text
+*/
+$G.stripSectionNumbering= function (sectionText, sectionId)
+{
+	// strip section numering
+	if (sectionText.search(/^[0-9.]+ /) > -1)
+	{
+		var isNumbered = true;
+		if (sectionId.search(/^[0-9.]+_/) > -1)
+		{
+			if (sectionText.replace(/^([0-9. ]+) .*/, '$1').length == sectionId.replace(/^([0-9._]+)_.*/, '$1').length)
+			{
+				isNumbered = false;
+			}
+		}
+		if (isNumbered)
+		{
+			sectionText = sectionText.replace(/^[0-9.]+ (.*)/, '$1');
+		}
+	}
+	return sectionText;
 };
 
 /**
