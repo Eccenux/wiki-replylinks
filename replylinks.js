@@ -28,7 +28,7 @@ var oRepLinks = {};
 /* -=-=-=-=-=-=-=-=-=-=-=-
 	Version
  -=-=-=-=-=-=-=-=-=-=-=- */
-oRepLinks.version = oRepLinks.ver = '1.6.9';
+oRepLinks.version = oRepLinks.ver = '1.6.10';
 
 /* -=-=-=-=-=-=-=-=-=-=-=-
 	Preferences
@@ -341,7 +341,7 @@ $G.addReplyLinks = function()
 			{
 				secAbove.id = a[i].id;
 				// sometimes there could be a link in the header (maybe some more)
-				secAbove.text = $G.stripSectionNumbering($G.parseSectionText(header.innerHTML));
+				secAbove.text = $G.stripSectionNumbering($G.parseSectionText(header.innerHTML), secAbove.id);
 				// should be set only once (as it is always the same), but let's leave it that way
 				secReplyText = $G.i18n['std prefix'];
 				//header.innerHTML = '['+secAbove.id+'@'+found+']&rarr;'+secAbove.text;
@@ -353,7 +353,7 @@ $G.addReplyLinks = function()
 		{
 			secAbove.id = a[i].id;
 			// sometimes there could be a link in the header (maybe some more)
-			secAbove.text = $G.stripSectionNumbering($G.parseSectionText(a[i].innerHTML));
+			secAbove.text = $G.stripSectionNumbering($G.parseSectionText(a[i].innerHTML), secAbove.id);
 			// should be set only once (as it is always the same), but let's leave it that way
 			secReplyText = $G.i18n['std prefix'];
 			//header.innerHTML = '['+secAbove.id+'@'+found+']&rarr;'+secAbove.text;
@@ -406,7 +406,7 @@ $G.parseSectionText = function (html)
 /**
 	@brief Strips section numbering if present.
 
-	@param sectionText Text oof the section.
+	@param sectionText Text of the section.
 	@param sectionId Id of the section.
 	@returns Stripped text
 */
