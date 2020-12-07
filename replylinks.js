@@ -8,14 +8,15 @@
 		- adding reply links near user links
 		- inserting text given in newsectionname (as PHP param in the location string of the page)
 
-    Copyright:  ©2006-2017 Maciej Jaros (pl:User:Nux, en:User:EcceNux)
+    Copyright:  ©2006-2020 Maciej Jaros (pl:User:Nux, en:User:EcceNux)
      Licencja:  GNU General Public License v2
                 http://opensource.org/licenses/gpl-license.php
 
 	@note Please keep MW 1.16 compatible (i.e. do not use mw.config directly)
 	@note jQuery is required though
-	@note Dev version contains more comments see: http://pl.wikipedia.org/wiki/Wikipedysta:Nux/replylinks.dev.js
+	@note Dev version: http://pl.wikipedia.org/wiki/Wikipedysta:Nux/replylinks.dev.js
 */
+/* global mw, $ */
 /* -=-=-=-=-=-=-=-=-=-=-=-
 	Object init
  -=-=-=-=-=-=-=-=-=-=-=- */
@@ -28,7 +29,7 @@ var oRepLinks = {};
 /* -=-=-=-=-=-=-=-=-=-=-=-
 	Version
  -=-=-=-=-=-=-=-=-=-=-=- */
-oRepLinks.version = oRepLinks.ver = '1.6.10';
+oRepLinks.version = oRepLinks.ver = '1.6.11';
 
 /* -=-=-=-=-=-=-=-=-=-=-=-
 	Preferences
@@ -243,7 +244,7 @@ $G.addReplyLinks = function()
 	// create regexpes for user links
 	var reHref = new RegExp ($G.strReHrefBase + "([^/]*)$", "i");	// with ignore case
 	var reHrefNew = new RegExp ($G.strReHrefNewBase + "([^/?&]*)", "i");	// with ignore case
-	var reHrefAnonim = new RegExp ($G.strReHrefAnonimBase + "([\\.0-9]*)$");
+	var reHrefAnonim = new RegExp ($G.strReHrefAnonimBase + "([\\.0-9]*|[0-9a-f]*:[0-9a-f:]+)$", 'i');
 
 	var content = document.getElementById('content');
 	if (!content)
@@ -397,7 +398,7 @@ $G.parseSectionText = function (html)
 	// replace cut anything in brackets [] (editing sections links and such)
 	html = html.replace(/\[[^\]]*\]/,'');
 	// replace wiki stuff with null
-	html = html.replace(/[\{\}]/g,'');
+	html = html.replace(/[{}]/g,'');
 	// trim (right,left)
 	html =  html.replace(/[ \t]*$/,'').replace(/^[ \t]*/,'');
 	return html;
