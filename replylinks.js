@@ -179,9 +179,18 @@ $G.autoNewSectionName = function()
 	// Get input element for section name (now understood as the textbox)
 	//
 	var elInput = document.getElementById('wpTextbox1');
-	console.log('[replylinks] autoNewSectionName'
-		, document.querySelector('.ext-discussiontools-ui-newTopic')
-	);
+	if (location.href.indexOf('Nux/test') > 0) {
+		console.log('[replylinks] autoNewSectionName'
+			, document.querySelector('.ext-discussiontools-ui-newTopic')
+		);
+		
+		document.querySelector('.oo-ui-fieldLayout-field input').value = 'Temat jakiś';
+		
+		var rangeToReplace = new ve.Range(0),
+		    surfaceModel = ve.init.target.getSurface().getModel(),
+		    fragment = surfaceModel.getLinearFragment(rangeToReplace);
+		fragment.insertContent("testung testung");		
+	}
 	if (elInput)
 	{
 		//
