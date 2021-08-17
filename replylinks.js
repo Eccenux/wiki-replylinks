@@ -1,3 +1,5 @@
+/* global ve */
+/* eslint-disable indent */
 /**
 	@file Odpowiedzi z linkami (Reply links with backtrack links)
 
@@ -169,76 +171,100 @@ $G.oBotToOwner = window.oRepLinksCustomB2O || {'':''
 };
 
 /**
+ * Get data "sent" from previous page.
+ * 
+ * (data from url param)
+ * @private
+ */
+$G.autoNewSectionData = function()
+{
+	var data = {
+		title: '',
+		content: '',
+	}
+	var reParam = new RegExp ("&newsectionname=([^&]*)", "i");	// ignoring lettercase
+	var matches = reParam.exec(location.search);
+	var sectxt;
+	// append to input if all OK
+	if (matches)
+	{
+		sectxt = decodeURIComponent(matches[1]);
+		data.content = ';'+sectxt+'\n\n';
+	}
+
+	//
+	// Add some summary
+	matches = /[ ](.*)\]/.exec(sectxt);
+	// append to input if all OK
+	if (matches)
+	{
+		data.title = decodeURIComponent(matches[1]);
+	}
+
+	return data;
+}
+
+/**
+ * 
+ * @param {String} content 
+ * @private
+ */
+$G.vePrependContent = function(content) {
+	var rangeToReplace = new ve.Range(0),
+		surfaceModel = ve.init.target.getSurface().getModel(),
+		fragment = surfaceModel.getLinearFragment(rangeToReplace);
+	fragment.insertContent(content);
+}
+
+/**
 	@brief Inserting new section name and some info from the location string param.
 
 	@note newsectionname url param used
 */
-$G.autoNewSectionName = function()
+$G.autoNewSectionInit = function()
 {
+	var data = $G.autoNewSectionData();
+	if (data.content.length <= 0) {
+		return;
+	}
+
 	//
-	// Get input element for section name (now understood as the textbox)
+	// Discussion tools editor (VE)
+	//
+	var discussionToolsContainer = document.querySelector('.ext-discussiontools-ui-newTopic');
+	if (discussionToolsContainer) {
+		var titleEl = discussionToolsContainer.querySelector('.oo-ui-fieldLayout-field input');
+		if (titleEl) {
+			titleEl.value = data.content.title;
+		}
+		if (mw && mw.loader) {
+			mw.loader.using( 'ext.visualEditor.desktopArticleTarget.init' ).then( function() {
+				console.log('[replylinks] ve desktopArticleTarget init');
+				$G.vePrependContent(data.content);
+			});
+		}
+		return;
+	}
+
+	//
+	// Standard new-section form
 	//
 	var elInput = document.getElementById('wpTextbox1');
-	if (location.href.indexOf('Nux/test') > 0) {
-		console.log('[replylinks] autoNewSectionName'
-			, document.querySelector('.ext-discussiontools-ui-newTopic')
-		);
-		
-		document.querySelector('.oo-ui-fieldLayout-field input').value = 'Temat jakiś';
-		
-		var doneInsertStuffVe = false;
-		function insertStuffVe() {
-			if (doneInsertStuffVe) {
-				return false;
-			}
-			doneInsertStuffVe = true;
-			
-			var rangeToReplace = new ve.Range(0),
-			    surfaceModel = ve.init.target.getSurface().getModel(),
-			    fragment = surfaceModel.getLinearFragment(rangeToReplace);
-			fragment.insertContent("testung testung");	
-		}
-		
-		// wait until surface is ready
-		if ( window.ve && ve.init && ve.init.target && ve.init.target.active ) {
-			console.log('[replylinks] ve was ready');
-			//insertStuffVe();
-		}
-		mw.hook( 've.activationComplete' ).add( function () {
-			console.log('[replylinks] ve activationComplete');
-			insertStuffVe();
-		} );
-		mw.loader.using( 'ext.visualEditor.desktopArticleTarget.init' ).then( function() {
-			console.log('[replylinks] ve desktopArticleTarget init');
-			insertStuffVe();
-		});
-
-	}
 	if (elInput)
 	{
-		//
-		// Get data send from previous page
-		//
-		var reParam = new RegExp ("&newsectionname=([^&]*)", "i");	// ignoring lettercase
-		var matches = reParam.exec(location.search);
-		var sectxt;
-		// append to input if all OK
-		if (matches)
+		// section content (link)
+		if (data.content.length > 0) {
 		{
-			sectxt = decodeURIComponent(matches[1]);
-			elInput.value += ';'+sectxt+'\n\n';
+			elInput.value += data.content;
 		}
 
-		//
-		// Add some summary
+		// section title
 		elInput = document.getElementById('wpSummary');
 		if (elInput)
 		{
-			matches = /[ ](.*)\]/.exec(sectxt);
-			// append to input if all OK
-			if (matches)
+			if (data.title.length > 0) {
 			{
-				elInput.value += decodeURIComponent(matches[1]);
+				elInput.value += data.title;
 			}
 		}
 	}
@@ -500,7 +526,7 @@ $G.getElementsByTagNames = function (list, obj)
 if (location.search.indexOf('newsectionname=') > 0 
 	&& $G.getMediaWikiConfig('wgCanonicalNamespace')=='User_talk')
 {
-	$($G.autoNewSectionName);
+	$($G.autoNewSectionInit);
 }
 // add links
 if ($G.getMediaWikiConfig('wgAction')!='edit' 
