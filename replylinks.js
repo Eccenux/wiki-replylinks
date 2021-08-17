@@ -465,12 +465,14 @@ $G.getElementsByTagNames = function (list, obj)
 // add text to textbox
 //if ($G.getMediaWikiConfig('wgAction')=='edit' && $G.getMediaWikiConfig('wgCanonicalNamespace')=='User_talk')
 // note, wgAction=view for dynamic new-section
-if (location.search.indexOf('newsectionname=') > 0 && $G.getMediaWikiConfig('wgCanonicalNamespace')=='User_talk'))
+if (location.search.indexOf('newsectionname=') > 0 
+	&& $G.getMediaWikiConfig('wgCanonicalNamespace')=='User_talk')
 {
 	$($G.autoNewSectionName);
 }
 // add links
-if ($G.getMediaWikiConfig('wgAction')!='edit' && $G.getMediaWikiConfig('wgAction')!='submit')
+if ($G.getMediaWikiConfig('wgAction')!='edit' 
+	&& $G.getMediaWikiConfig('wgAction')!='submit')
 {
 	$($G.addReplyLinks);
 }
