@@ -237,7 +237,7 @@ $G.autoNewSectionInit = function()
 	{
 		var titleEl = discussionToolsContainer.querySelector('.oo-ui-fieldLayout-field input');
 		if (titleEl) {
-			titleEl.value = data.content.title;
+			titleEl.value = data.title;
 		}
 		if (mw && mw.loader) {
 			mw.loader.using( 'ext.visualEditor.desktopArticleTarget.init' ).then( function() {
