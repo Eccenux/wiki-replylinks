@@ -14,7 +14,9 @@
 
 	@note Please keep MW 1.16 compatible (i.e. do not use mw.config directly)
 	@note jQuery is required though
+	
 	@note Dev version: http://pl.wikipedia.org/wiki/Wikipedysta:Nux/replylinks.dev.js
+	@note Prod version: https://pl.wikipedia.org/wiki/MediaWiki:Gadget-replylinks.js
 */
 /* global mw, $ */
 /* -=-=-=-=-=-=-=-=-=-=-=-
@@ -29,7 +31,7 @@ var oRepLinks = {};
 /* -=-=-=-=-=-=-=-=-=-=-=-
 	Version
  -=-=-=-=-=-=-=-=-=-=-=- */
-oRepLinks.version = oRepLinks.ver = '1.6.11';
+oRepLinks.version = oRepLinks.ver = '1.6.12pre';
 
 /* -=-=-=-=-=-=-=-=-=-=-=-
 	Preferences
@@ -177,6 +179,9 @@ $G.autoNewSectionName = function()
 	// Get input element for section name (now understood as the textbox)
 	//
 	var elInput = document.getElementById('wpTextbox1');
+	console.log('[replylinks] autoNewSectionName'
+		, document.querySelector('.ext-discussiontools-ui-newTopic')
+	);
 	if (elInput)
 	{
 		//
