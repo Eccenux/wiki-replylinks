@@ -186,10 +186,23 @@ $G.autoNewSectionName = function()
 		
 		document.querySelector('.oo-ui-fieldLayout-field input').value = 'Temat jakiś';
 		
-		var rangeToReplace = new ve.Range(0),
-		    surfaceModel = ve.init.target.getSurface().getModel(),
-		    fragment = surfaceModel.getLinearFragment(rangeToReplace);
-		fragment.insertContent("testung testung");		
+		function insertStuffVe() {
+			var rangeToReplace = new ve.Range(0),
+			    surfaceModel = ve.init.target.getSurface().getModel(),
+			    fragment = surfaceModel.getLinearFragment(rangeToReplace);
+			fragment.insertContent("testung testung");	
+		}
+		
+		// wait until surface is ready
+		if ( window.ve && ve.init && ve.init.target && ve.init.target.active ) {
+			console.log('[replylinks] ve was ready');
+			insertStuffVe();
+		}
+		mw.hook( 've.activationComplete' ).add( function () {
+			console.log('[replylinks] ve activated');
+			insertStuffVe();
+		} );
+
 	}
 	if (elInput)
 	{
