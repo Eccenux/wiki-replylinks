@@ -224,7 +224,8 @@ $G.vePrependContent = function(content) {
 $G.autoNewSectionInit = function()
 {
 	var data = $G.autoNewSectionData();
-	if (data.content.length <= 0) {
+	if (data.content.length <= 0)
+	{
 		return;
 	}
 
@@ -232,7 +233,8 @@ $G.autoNewSectionInit = function()
 	// Discussion tools editor (VE)
 	//
 	var discussionToolsContainer = document.querySelector('.ext-discussiontools-ui-newTopic');
-	if (discussionToolsContainer) {
+	if (discussionToolsContainer)
+	{
 		var titleEl = discussionToolsContainer.querySelector('.oo-ui-fieldLayout-field input');
 		if (titleEl) {
 			titleEl.value = data.content.title;
@@ -253,7 +255,7 @@ $G.autoNewSectionInit = function()
 	if (elInput)
 	{
 		// section content (link)
-		if (data.content.length > 0) {
+		if (data.content.length > 0)
 		{
 			elInput.value += data.content;
 		}
@@ -262,7 +264,7 @@ $G.autoNewSectionInit = function()
 		elInput = document.getElementById('wpSummary');
 		if (elInput)
 		{
-			if (data.title.length > 0) {
+			if (data.title.length > 0)
 			{
 				elInput.value += data.title;
 			}
