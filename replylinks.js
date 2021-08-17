@@ -33,7 +33,7 @@ var oRepLinks = {};
 /* -=-=-=-=-=-=-=-=-=-=-=-
 	Version
  -=-=-=-=-=-=-=-=-=-=-=- */
-oRepLinks.version = oRepLinks.ver = '1.6.12pre';
+oRepLinks.version = oRepLinks.ver = '1.7.0pre';
 
 /* -=-=-=-=-=-=-=-=-=-=-=-
 	Preferences
@@ -232,6 +232,8 @@ $G.autoNewSectionInit = function()
 	//
 	// Discussion tools editor (VE)
 	//
+	// (restoring changes brakes this; plus prepending content adds nowiki tags in visual model...)
+	/**
 	var discussionToolsContainer = document.querySelector('.ext-discussiontools-ui-newTopic');
 	if (discussionToolsContainer)
 	{
@@ -247,6 +249,7 @@ $G.autoNewSectionInit = function()
 		}
 		return;
 	}
+	/**/
 
 	//
 	// Standard new-section form
@@ -365,6 +368,7 @@ $G.addReplyLinks = function()
 				//
 				// and now to create and add data for the new reply section name
 				var newSectionName = '['+hrefPermalink+'#'+secAbove.id+' '+secReplyText+secAbove.text+']';
+				hrefReply += '&dtenable=0';	// disable dicussion tools
 				hrefReply += '&newsectionname=' + encodeURIComponent(newSectionName);
 				var newEl = document.createElement('small');
 				var newA = document.createElement('a');
@@ -523,7 +527,8 @@ $G.getElementsByTagNames = function (list, obj)
 // Init
 //
 // add text to textbox
-//if ($G.getMediaWikiConfig('wgAction')=='edit' && $G.getMediaWikiConfig('wgCanonicalNamespace')=='User_talk')
+// if ($G.getMediaWikiConfig('wgAction')=='edit' 
+// 	&& $G.getMediaWikiConfig('wgCanonicalNamespace')=='User_talk')
 // note, wgAction=view for dynamic new-section
 if (location.search.indexOf('newsectionname=') > 0 
 	&& $G.getMediaWikiConfig('wgCanonicalNamespace')=='User_talk')
