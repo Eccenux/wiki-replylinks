@@ -186,7 +186,13 @@ $G.autoNewSectionName = function()
 		
 		document.querySelector('.oo-ui-fieldLayout-field input').value = 'Temat jakiś';
 		
+		var doneInsertStuffVe = false;
 		function insertStuffVe() {
+			if (doneInsertStuffVe) {
+				return false;
+			}
+			doneInsertStuffVe = true;
+			
 			var rangeToReplace = new ve.Range(0),
 			    surfaceModel = ve.init.target.getSurface().getModel(),
 			    fragment = surfaceModel.getLinearFragment(rangeToReplace);
@@ -196,12 +202,16 @@ $G.autoNewSectionName = function()
 		// wait until surface is ready
 		if ( window.ve && ve.init && ve.init.target && ve.init.target.active ) {
 			console.log('[replylinks] ve was ready');
-			insertStuffVe();
+			//insertStuffVe();
 		}
 		mw.hook( 've.activationComplete' ).add( function () {
-			console.log('[replylinks] ve activated');
+			console.log('[replylinks] ve activationComplete');
 			insertStuffVe();
 		} );
+		mw.loader.using( 'ext.visualEditor.desktopArticleTarget.init' ).then( function() {
+			console.log('[replylinks] ve desktopArticleTarget init');
+			insertStuffVe();
+		});
 
 	}
 	if (elInput)
