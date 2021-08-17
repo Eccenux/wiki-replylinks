@@ -33,7 +33,7 @@ var oRepLinks = {};
 /* -=-=-=-=-=-=-=-=-=-=-=-
 	Version
  -=-=-=-=-=-=-=-=-=-=-=- */
-oRepLinks.version = oRepLinks.ver = '1.7.0pre';
+oRepLinks.version = oRepLinks.ver = '1.7.0';
 
 /* -=-=-=-=-=-=-=-=-=-=-=-
 	Preferences
@@ -67,10 +67,10 @@ oRepLinks.hrefOnlineIPwhois = 'http://www.ripe.net/perl/whois?form_type=simple&s
 $G.getMediaWikiConfig = function(variableName)
 {
 	if (typeof(mw) === 'object' && 'config' in mw) {
-		return mw.config.get(variableName)
+		return mw.config.get(variableName);
 	}
 	return window[variableName];
-}
+};
 
 //
 // i18n setup
@@ -103,7 +103,7 @@ $G.getNamespaceNames = function(namespaceNumber, encodingFunction)
 		}
 	}
 	return found;
-}
+};
 
 //
 // Technical Settings
@@ -181,7 +181,7 @@ $G.autoNewSectionData = function()
 	var data = {
 		title: '',
 		content: '',
-	}
+	};
 	var reParam = new RegExp ("&newsectionname=([^&]*)", "i");	// ignoring lettercase
 	var matches = reParam.exec(location.search);
 	var sectxt;
@@ -202,7 +202,7 @@ $G.autoNewSectionData = function()
 	}
 
 	return data;
-}
+};
 
 /**
  * 
@@ -214,7 +214,7 @@ $G.vePrependContent = function(content) {
 		surfaceModel = ve.init.target.getSurface().getModel(),
 		fragment = surfaceModel.getLinearFragment(rangeToReplace);
 	fragment.insertContent(content);
-}
+};
 
 /**
 	@brief Inserting new section name and some info from the location string param.
@@ -260,7 +260,7 @@ $G.autoNewSectionInit = function()
 		// section content (link)
 		if (data.content.length > 0)
 		{
-			elInput.value += data.content;
+			elInput.value = data.content;
 		}
 
 		// section title
@@ -269,7 +269,7 @@ $G.autoNewSectionInit = function()
 		{
 			if (data.title.length > 0)
 			{
-				elInput.value += data.title;
+				elInput.value = data.title;
 			}
 		}
 	}
