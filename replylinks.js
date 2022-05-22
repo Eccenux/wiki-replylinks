@@ -180,15 +180,8 @@ $G.strReHrefAnonimBase    = $G.getMediaWikiConfig('wgServer') + $G.getMediaWikiC
 $G.strBaseUserTalkURL     = $G.getMediaWikiConfig('wgServer') + $G.getMediaWikiConfig('wgArticlePath').replace('$1', encodeURIComponent($G.getMediaWikiConfig('wgFormattedNamespaces')[3])) + ':';
 
 /*
-http://pl.wikipedia.org/w/index.php?title=Wikipedia:Boty&action=edit&section=2
-
-// bot:owner
-../bot\|([^|]+)\|([^|]+).+
-,'$1':'$2'
-
-// remove foreign:
-.+'(projekt|orig)=.+[\r\n]+
-
+	The bot:owner map.
+	oBotToOwner update is above.
 */
 $G.oBotToOwner = window.oRepLinksCustomB2O || {'':''
 ,'.anacondabot':'.anaconda'
