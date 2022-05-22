@@ -10,7 +10,7 @@
 		- adding reply links near user links
 		- inserting btext given in newsectionname (as PHP param in the location string of the page)
 
-    Copyright:  ©2006-2021 Maciej Jaros (pl:User:Nux, en:User:EcceNux)
+    Copyright:  ©2006-2022 Maciej Jaros (pl:User:Nux, en:User:EcceNux)
      Licencja:  GNU General Public License v2
                 http://opensource.org/licenses/gpl-license.php
 
@@ -120,8 +120,14 @@ $G.strBaseUserTalkURL     = $G.getMediaWikiConfig('wgServer') + $G.getMediaWikiC
 
 /*
 http://pl.wikipedia.org/w/index.php?title=Wikipedia:Boty&action=edit&section=2
-...tableinfo\|([^|]+)\|[^\[\]]+\[\[(?:User|Wikipedysta):([^\[\]\|]+).*
+
+// bot:owner
+../bot\|([^|]+)\|([^|]+).+
 ,'$1':'$2'
+
+// remove foreign:
+.+'(projekt|orig)=.+[\r\n]+
+
 */
 $G.oBotToOwner = window.oRepLinksCustomB2O || {'':''
 ,'AndrzeiBOT':'Andrzei111'
