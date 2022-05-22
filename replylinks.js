@@ -8,7 +8,7 @@
 
     Main functions:
 		- adding reply links near user links
-		- inserting btext given in newsectionname (as PHP param in the location string of the page)
+		- inserting text given in newsectionname (as PHP param in the location string of the page)
 
     Copyright:  ©2006-2022 Maciej Jaros (pl:User:Nux, en:User:EcceNux)
      Licencja:  GNU General Public License v2
@@ -29,11 +29,12 @@ if (typeof(window.oRepLinks) != 'undefined')
 	throw ("oRepLinks already used");
 }
 var oRepLinks = {};
+window.oRepLinks = oRepLinks;
 
 /* -=-=-=-=-=-=-=-=-=-=-=-
 	Version
  -=-=-=-=-=-=-=-=-=-=-=- */
-oRepLinks.version = oRepLinks.ver = '1.7.1';
+oRepLinks.version = oRepLinks.ver = '1.7.3';
 
 /* -=-=-=-=-=-=-=-=-=-=-=-
 	Preferences
@@ -53,6 +54,66 @@ oRepLinks.i18n = {'':''
 };
 // IP will be added to the end to create a working link
 oRepLinks.hrefOnlineIPwhois = 'http://www.ripe.net/perl/whois?form_type=simple&searchtext=';
+
+/**
+ * Pobieranie listy botów.
+ * 
+ * Do użycia na:
+ * https://pl.wikipedia.org/wiki/Wikipedia:Boty
+ * 
+ * Do podmiany obiekt `oBotToOwner`.
+ */
+/**
+function getUserFromAnchor(a) {
+	let name = '';
+	a.href.replace(/\/wiki\/Wikipedysta:(.+)/, function (a, userName) {
+		name = userName;
+	});
+	return name;
+}
+
+function readBots() {
+	const trs = document.querySelectorAll('table.wikitable tr');
+	const bots = {};
+	for (const tr of trs) {
+		const tds = tr.querySelectorAll('td:is(:nth-child(1), :nth-child(2))')
+		if (tds.length != 2) {
+			continue;
+		}
+		const bot = tds[0].querySelector('a[href*="/wiki/Wikipedysta:"]')
+		const user = tds[1].querySelector('a[href*="/wiki/Wikipedysta:"]')
+		if (!bot || !user) {
+			continue;
+		}
+		let botName = getUserFromAnchor(bot);
+		let userName = getUserFromAnchor(user);
+		if (!botName.length || !userName.length) {
+			console.warn('skipping', {
+				botName,
+				userName
+			});
+			continue;
+		}
+		botName = botName.substring(0, 1).toUpperCase() + botName.substring(1);
+		bots[botName] = userName;
+		console.log(botName, userName);
+	}
+	return bots;
+}
+var bots = readBots();
+console.log(bots);
+
+function botStrings(bots) {
+	const sortedKeys = Object.keys(bots).sort();
+	let botString = '';
+	for (botName of sortedKeys) {
+		botString += `\n,'${botName}':'${bots[botName]}'`;
+	}
+	return botString;
+}
+console.log(botStrings(bots));
+copy(botStrings(bots));
+/**/
 
 /* -=-=-=-=-=-=-=-=-=-=-=-
 	Gadget code
@@ -130,112 +191,115 @@ http://pl.wikipedia.org/w/index.php?title=Wikipedia:Boty&action=edit&section=2
 
 */
 $G.oBotToOwner = window.oRepLinksCustomB2O || {'':''
-,'AndrzeiBOT':'Andrzei111'
-,'Andrzej94.bot':'Andrzej94'
-,'BuddBot':'Budd Le Toux'
-,'Dušan Kreheľ (bot)':'Dušan Kreheľ'
-,'EmptyBot':'Emptywords'
-,'malarzBOT':'malarz pl'
-,'malarzBOT.admin':'malarz pl'
-,'mastiBot':'masti'
-,'mastiBot.admin':'masti'
-,'Mathieu Mars .bot':'Mathieu Mars'
-,'MatmaBot':'Matma Rex'
-,'Miner':'Saper'
-,'NuxBot':'Nux'
-,'OpenBOT':'Openbk'
-,'pacynka malarza':'malarz pl'
-,'Paweł Ziemian BOT':'Paweł Ziemian'
-,'PBbot':'Peter Bowman'
-,'ptjackBOT':'ptjackyll'
-,'RavpawliszBot':'Ravpawlisz'
-,'PrzemuBot':'Przemub'
-,'Szoltys-bot':'Szoltys'
-,'The Polish Bot':'The Polish'
-,'Wargo32.exe':'wargo'
+,'.anacondabot':'.anaconda'
 ,'A.bot':'A.'
 ,'Ab.awbot':'Abronikowski'
-,'Adas bot':'Adziura'
-,'AlohaBOT':'Patrol110'
+,'Adas_bot':'Adziura'
 ,'AkBot':'Ankry'
-,'.anacondabot':'.anaconda'
+,'AlohaBOT':'Patrol110'
+,'AndrzeiBOT':'Andrzei111'
+,'Andrzej94.bot':'Andrzej94'
 ,'AutoBot':'WarX'
 ,'AutoPur':'Pur'
+,'BOTiczelli':'ABX'
 ,'Beau.bot':'Beau'
 ,'Beau.bot.admin':'Beau'
 ,'BlackBot':'Blackfish'
+,'Bluebot~plwiki':'Blueshade'
 ,'Bocianski.bot':'Bocianski'
-,'BossBot':'the boss'
-,'BOTiczelli':'ABX'
+,'BossBot':'The_boss'
 ,'BotOks':'Skalee'
+,'BuddBot':'Budd_Le_Toux'
 ,'Bugbot':'Lcamtuf'
-,'Bulwersator: bot':'Bulwersator'
-,'BzBot':'BeŻet'
+,'BzBot':'Be%C5%BBet'
+,'ClueBot~plwiki':'Mathel'
 ,'Cookie.bot':'Jwitos'
 ,'DodekBot':'Dodek'
 ,'DonnerJack.bot':'ABach'
+,'Du%C5%A1an_Krehe%C4%BE_(bot)':'Du%C5%A1an_Krehe%C4%BE'
 ,'EgonBOT':'Egon~plwiki'
 ,'EinsBot':'Einsbor'
+,'EmptyBot':'Emptywords'
+,'EquadusBot~plwiki':'Equadus'
 ,'Erwin-Bot':'Ejdzej'
 ,'Escarbot':'Vargenau'
 ,'Faxebot':'Faxe'
-,'g.bot':'gregul'
+,'G.bot':'Gregul'
 ,'Geonidiuszbot':'Geonidiusz'
 ,'Halibott':'Halibutt'
 ,'Holek.Bot':'Holek'
 ,'JarektBot':'Jarekt'
-,'Jaszczurobot':'Jaszczuroczłek'
+,'Jaszczurobot':'Jaszczurocz%C5%82ek'
 ,'Jozef-k.bot':'Jozef-k'
+,'K.J.Bot':'Krzysiu_Jarzyna'
 ,'KamikazeBot':'Karol007'
 ,'Kamil-bBOT':'Kamil-b'
 ,'KangelBot':'Kangel'
 ,'Kbot':'Kb'
-,'K.J.Bot':'Krzysiu Jarzyna'
 ,'Kotbot':'Kotniski'
 ,'LA2-bot':'LA2'
 ,'Lambot':'Lampak'
 ,'LeafBot':'Leafnode'
 ,'LeonardoRob0t':'LeonardoGregianin'
+,'MBot':'Maikking'
 ,'MagulBot':'Magul'
+,'MalarzBOT':'Malarz_pl'
+,'MalarzBOT.admin':'Malarz_pl'
 ,'MarciBOT':'Marcimon'
 ,'Margosbot':'Margos'
+,'MastiBot':'Masti'
+,'MastiBot.admin':'Masti'
 ,'Matbot':'Matusz'
 ,'Mateusz.bot':'Mateusz.ns'
-,'MBot':'maikking'
+,'Mathieu_Mars_.bot':'Mathieu_Mars'
+,'MatmaBot':'Matma_Rex'
+,'McBot~plwiki':'McMonster'
 ,'Merdis.bot':'Merdis'
+,'Miner':'Saper'
 ,'MiszaBot':'Misza13'
-,'Mrówka':'Matma Rex'
-,'nickyBot':'Wojciech Pędzich'
+,'Mr%C3%B3wka':'Matma_Rex'
+,'NickyBot':'Wojciech_P%C4%99dzich'
+,'NuxBot':'Nux'
 ,'OdderBot':'Odder'
 ,'Ohtnim':'Mintho'
 ,'Olafbot':'Olaf'
-,'OldEnt.bot':'Retireduser9001'
-,'PL Przemek.bot':'PL Przemek'
+,'OpenBOT':'Openbk'
+,'PBbot':'Peter_Bowman'
+,'PL_Przemek.bot':'PL_Przemek'
+,'Pacynka_malarza':'Malarz_pl'
+,'Pawe%C5%82_Ziemian_BOT':'Pawe%C5%82_Ziemian'
 ,'PowerBot':'Powerek38'
-,'Powiadomienia ZB':'Matma Rex'
-,'Pszczółka':'Therud'
+,'Powiadomienia_ZB':'Matma_Rex'
+,'PrzemuBot':'Przemub'
+,'Pszcz%C3%B3%C5%82ka':'Therud'
+,'PtjackBOT':'Ptjackyll'
 ,'Putorobot':'Putoro'
-,'pwlBOT':'Polskawliczbach'
+,'PwlBOT':'Polskawliczbach'
+,'RavpawliszBot':'Ravpawlisz'
+,'Rebot~plwiki':'Jagger'
 ,'RewersBot':'Nostrix'
 ,'RooBot':'Roo72'
 ,'RzuwigBot':'Rzuwig'
 ,'StankoBot':'Stanko'
-,'Staszek Jest Jeszcze Szybszy':'Staszek Szybki Jest'
+,'Staszek_Jest_Jeszcze_Szybszy':'Staszek_Szybki_Jest'
 ,'Stv.bot':'Stv'
 ,'Sunridin.bot':'Sunridin'
 ,'Szczepan.bot':'Szczepan1990'
+,'Szoltys-bot':'Szoltys'
 ,'TAMMBot':'TAMM'
-,'TarBot':'Tar Lócesilion'
+,'TarBot':'Tar_L%C3%B3cesilion'
 ,'Tawbot':'Taw'
+,'The_Polish_Bot':'The_Polish'
 ,'ToBot':'ToSter'
 ,'Trivelt.bot':'Trivelt'
-,'tsca.bot':'tsca'
-,'Ty221 bot':'Ty221'
+,'Tsca.bot':'Tsca'
+,'Ty221_bot':'Ty221'
 ,'UlvarBOT':'Ulv80'
 ,'Ver-bot':'Verwolff'
 ,'VindiBot':'Vindicator'
 ,'Vinne2.bot':'Vinne2'
 ,'WarXboT':'WarX'
+,'Wargo32.exe':'Wargo'
 ,'WebmajstrBot':'Webmajstr'
 ,'WikitanvirBot':'Wikitanvir'
 ,'WiktorynBot':'Wiktoryn'
