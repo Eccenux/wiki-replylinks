@@ -1,0 +1,33 @@
+// Requires `gsppvo.vscode-commandbar`.
+// Also: in settings (UI), `files.associations`, add `commandbar.json: jsonc` (json with comments).
+{
+	"skipTerminateQuickPick": true,
+	"skipSwitchToOutput": false,
+	"skipErrorMessage": true,
+	"commands": [
+		{
+			"text": "wikiploy-dev",
+			"tooltip": "Run build and deploy for staging.",
+			"color": "lightgreen",
+			"commandType": "exec",
+			"command": "node wikiploy-dev.js",
+			"priority": 0
+		},
+		{
+			"text": "wikiploy (release)",
+			"tooltip": "Run build and deploy as a gadget.",
+			"color": "lightgreen",
+			"commandType": "exec",
+			"command": "node wikiploy.js",
+			"priority": 0
+		},
+		{
+			"text": "npm up",
+			"tooltip": "Update modules and package locks.",
+			"color": "lightgreen",
+			"commandType": "exec",
+			"command": "npm up",
+			"priority": 0
+		}
+	]
+}

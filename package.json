@@ -1,0 +1,26 @@
+{
+  "name": "wiki-replylinks",
+  "version": "1.7.3",
+  "description": "Wikipedia reply links with backtrack links (reply from talk, history and diff).",
+  "main": "replylinks.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Eccenux/wiki-replylinks.git"
+  },
+  "author": "Maciej Nux Jaros",
+  "license": "CC-BY-SA",
+  "bugs": {
+    "url": "https://github.com/Eccenux/wiki-replylinks/issues"
+  },
+  "homepage": "https://github.com/Eccenux/wiki-replylinks#readme",
+  "dependencies": {
+    "wikiploy": "1.x"
+  },
+  "devDependencies": {
+    "eslint": "8.x"
+  }
+}
