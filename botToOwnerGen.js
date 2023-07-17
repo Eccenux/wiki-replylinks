@@ -48,10 +48,11 @@ console.log(bots);
 function botStrings(bots) {
 	const sortedKeys = Object.keys(bots).sort();
 	let botString = '';
-	for (botName of sortedKeys) {
+	for (let botName of sortedKeys) {
 		botString += `\n,'${botName}':'${bots[botName]}'`;
 	}
 	return botString;
 }
 console.log(botStrings(bots));
+// copy to clipboard
 copy(botStrings(bots));
