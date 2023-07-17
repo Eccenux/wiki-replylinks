@@ -1,5 +1,5 @@
-let version = '1.7.4';
-let info = 'external repo';
+let version = '1.7.5';
+let info = 'external botToOwnerGen.js';
 export {
 	version,
 	info,
