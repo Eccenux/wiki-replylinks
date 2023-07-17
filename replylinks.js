@@ -473,6 +473,10 @@ $G.addReplyLinks = function()
 			var found;
 			for (found=3; found; found--)	// max 3 forward
 			{
+				if (!(header instanceof Element)) {
+					found = false;
+					break;
+				}
 				header = header.nextSibling;
 				if (header!=null && header.nodeType==document.ELEMENT_NODE && header.nodeName.search(/h[0-9]/i)==0)
 				{
