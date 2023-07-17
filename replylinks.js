@@ -2,6 +2,7 @@
 /* eslint-disable indent */
 /**
 	@file Odpowiedzi z linkami (Reply links with backtrack links)
+	v{version}
 
 	Opis (pl):
 		- http://pl.wikipedia.org/wiki/Wikipedia:Narz%C4%99dzia/Odpowiedzi_z_linkami
@@ -10,7 +11,7 @@
 		- adding reply links near user links
 		- inserting text given in newsectionname (as PHP param in the location string of the page)
 
-    Copyright:  ©2006-2022 Maciej Jaros (pl:User:Nux, en:User:EcceNux)
+    Copyright:  ©2006-2023 Maciej Jaros (pl:User:Nux, en:User:EcceNux)
      Licencja:  GNU General Public License v2
                 http://opensource.org/licenses/gpl-license.php
 
@@ -19,8 +20,9 @@
 	
 	@note Dev version: http://pl.wikipedia.org/wiki/Wikipedysta:Nux/replylinks.dev.js
 	@note Prod version: https://pl.wikipedia.org/wiki/MediaWiki:Gadget-replylinks.js
+
+	@note Repo, bugz, pull requests: https://github.com/Eccenux/wiki-replylinks/
 */
-/* global mw, $ */
 /* -=-=-=-=-=-=-=-=-=-=-=-
 	Object init
  -=-=-=-=-=-=-=-=-=-=-=- */
@@ -34,7 +36,7 @@ window.oRepLinks = oRepLinks;
 /* -=-=-=-=-=-=-=-=-=-=-=-
 	Version
  -=-=-=-=-=-=-=-=-=-=-=- */
-oRepLinks.version = oRepLinks.ver = '1.7.3';
+oRepLinks.version = oRepLinks.ver = '{version}';
 
 /* -=-=-=-=-=-=-=-=-=-=-=-
 	Preferences

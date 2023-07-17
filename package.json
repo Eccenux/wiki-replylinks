@@ -1,6 +1,5 @@
 {
   "name": "wiki-replylinks",
-  "version": "1.7.3",
   "description": "Wikipedia reply links with backtrack links (reply from talk, history and diff).",
   "main": "replylinks.js",
   "type": "module",
