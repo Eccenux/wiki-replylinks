@@ -1,5 +1,5 @@
-let version = '1.7.6';
-let info = 'TypeError: header is null #1';
+let version = '1.8.0';
+let info = 'Subscribe to new topics #2';
 export {
 	version,
 	info,
