@@ -259,6 +259,12 @@ $G.prepareSub = function(summary)
 	state.user = $G.getMediaWikiConfig('wgRelevantUserName');
 	$G.saveState(state);
 }
+
+/**
+ * Max deltaT between submit and load [s].
+ */
+$G.maxValidTime = 60;
+
 /** @private Check to make a subscription. */
 $G.checkSub = function()
 {
@@ -267,20 +273,76 @@ $G.checkSub = function()
 	if (!(state && typeof state === 'object' && state.title)) {
 		return;
 	}
-	// check for subscription links
-	var el = [...document.querySelectorAll('.ext-discussiontools-init-section-subscribeButton')].pop();
-	if (!el) {
+	// check for subscription data
+	var sub = $G.findSub();
+	if (!sub) {
 		return;
 	}
-	var u = new URL(el.querySelector('a').href);
-	// TODO: after submit check title & user is the same => console.log
+	// after submit check user is the same
 	var user = $G.getMediaWikiConfig('wgRelevantUserName');
-	if (user === state.user) {
-		console.log('[replylinks]', 'checkSub legit?', state);
+	if (user !== state.user) {
+		return;
 	}
-	// TODO: if now()-time > maxtime => remove state
-	// TODO: if OK => subscribe; remove state
+	// if now()-time > maxtime => remove state
+	var now = (new Date()).getTime();
+	var deltaT = Math.round((now - state.time) / 1000);
+	if (deltaT > $G.maxValidTime) {
+		$G.removeState();
+		console.warn('[replylinks] stale state: now()-time: %d [s]', deltaT);
+		return;
+	}
+	// if OK => subscribe; remove state
+	$G.addSub(sub.pageTitle, sub.sectionTitle, sub.commentname);
+	$G.removeState();
 }
+
+/** @private Find subscription data. */
+$G.findSub = function()
+{
+	// check for subscription links first (or sub placeholders)
+	var els = document.querySelectorAll('.ext-discussiontools-init-section-subscribeButton');
+	if (!els.length) {
+		return false;
+	}
+	// we could just get href from above, but sadly href is not avilable right after save...
+	//var sub = new URL(el.querySelector('a').href);
+	// so instead...
+
+	// I hate this but it works 🙃
+	var section = Array.from(document.querySelectorAll('.ext-discussiontools-init-section')).pop();
+	if (!section) {
+		return false;
+	}
+	var h = section.querySelector('.mw-headline');
+	if (!h) {
+		return false;
+	}
+	var pageTitle = mw.config.get('wgRelevantPageName');
+	var sectionTitle = h.id;
+	// convert thread-id to subscriptions format... sadly not the same :-/
+	var commentname = h.getAttribute('data-mw-thread-id').replace(h.id, mw.config.get('wgUserName'));
+	return {pageTitle:pageTitle, sectionTitle:sectionTitle, commentname:commentname};
+};
+
+/** @private Add subscription. */
+/**
+ * 
+ * @param {String} pageTitle 
+ * @param {String} sectionTitle Not encoded. E.g. "Odp:Próba wiadoma 3"
+ * @param {String} commentname 
+ */
+$G.addSub = function(pageTitle, sectionTitle, commentname)
+{
+	new mw.Api().postWithEditToken( {
+		action: 'discussiontoolssubscribe',
+		//format : `json`,
+		formatversion : `2`,
+		//uselang : `pl`,
+		page : pageTitle + '#' + sectionTitle,
+		commentname : commentname,
+		subscribe : `true`,
+	} );
+};
 
 // on load
 if ($G.getMediaWikiConfig('wgAction')=='view'
@@ -293,8 +355,8 @@ if ($G.getMediaWikiConfig('wgAction')=='view'
 	});
 }
 
-// TODO: save/read per user? (could make a getter add user to the key)
-$G._stateKey = 'replylinks_sub';
+// temporary subscription storage
+$G._stateKey = 'userjs.replylinks.sub';
 
 /** @private Save post-form state. */
 $G.saveState = function(state)
