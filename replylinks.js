@@ -23,6 +23,7 @@
 
 	@note Repo, bugz, pull requests: https://github.com/Eccenux/wiki-replylinks/
 */
+// <nowiki>
 /* -=-=-=-=-=-=-=-=-=-=-=-
 	Object init
  -=-=-=-=-=-=-=-=-=-=-=- */
@@ -213,8 +214,12 @@ $G.autoNewSectionInit = function()
 		// section content (link)
 		if (data.content.length > 0)
 		{
-			elInput.value = data.content;
+			// link + signature
+			elInput.value = data.content + '\n\n--'+'~'+'~'+'~'+'~';
 		}
+
+		// setup post-save action(s)
+		$G.setupPostSave(elInput);
 
 		// section title
 		elInput = document.getElementById('wpSummary');
@@ -227,6 +232,89 @@ $G.autoNewSectionInit = function()
 		}
 	}
 };
+
+/** @private Setup form for post-save action(s) like subscription. */
+$G.setupPostSave = function(textbox)
+{
+	textbox = document.getElementById('wpTextbox1');
+	summary = document.querySelector('#wpSummary');
+	if (!textbox || !summary) {
+		console.error('[replylinks]', 'setupPostSave failed');
+		return;
+	}
+	textbox.form.addEventListener('submit', function(){
+		// auto-subscriptions: https://github.com/Eccenux/wiki-replylinks/issues/2
+		$G.prepareSub(summary);
+	});
+};
+
+/** @private Prepare for subscription. */
+$G.prepareSub = function(summary)
+{
+	var state = {};
+	// save state before submit: title, with time
+	state.title = summary.value;
+	state.time = (new Date()).getTime();
+	// also save "relevant" user name
+	state.user = $G.getMediaWikiConfig('wgRelevantUserName');
+	$G.saveState(state);
+}
+/** @private Check to make a subscription. */
+$G.checkSub = function()
+{
+	var state = $G.readState();
+	// basic state validation
+	if (!(state && typeof state === 'object' && state.title)) {
+		return;
+	}
+	// check for subscription links
+	var el = [...document.querySelectorAll('.ext-discussiontools-init-section-subscribeButton')].pop();
+	if (!el) {
+		return;
+	}
+	var u = new URL(el.querySelector('a').href);
+	// TODO: after submit check title & user is the same => console.log
+	var user = $G.getMediaWikiConfig('wgRelevantUserName');
+	if (user === state.user) {
+		console.log('[replylinks]', 'checkSub legit?', state);
+	}
+	// TODO: if now()-time > maxtime => remove state
+	// TODO: if OK => subscribe; remove state
+}
+
+// on load
+if ($G.getMediaWikiConfig('wgAction')=='view'
+	&& $G.getMediaWikiConfig('wgCanonicalNamespace')=='User_talk')
+{
+	$(function(){
+		setTimeout(function () {
+			$G.checkSub();
+		}, 100);
+	});
+}
+
+// TODO: save/read per user? (could make a getter add user to the key)
+$G._stateKey = 'replylinks_sub';
+
+/** @private Save post-form state. */
+$G.saveState = function(state)
+{
+	console.log('[replylinks]', 'saveState', state);
+	localStorage.setItem($G._stateKey, JSON.stringify(state));
+}
+/** @private Read post-form state. */
+$G.readState = function()
+{
+	var rawState = localStorage.getItem($G._stateKey);
+	var state = JSON.parse(rawState);
+	console.log('[replylinks]', 'readState', state);
+	return state;
+}
+/** @private Clear post-form state. */
+$G.removeState = function()
+{
+	localStorage.removeItem($G._stateKey);
+}
 
 /**
 	@brief Adding reply links near user links.
@@ -502,4 +590,5 @@ if ($G.getMediaWikiConfig('wgAction')!='edit'
 /* -=-=-=-=-=-=-=-=-=-=-=-
 	Gadget code : END
  -=-=-=-=-=-=-=-=-=-=-=- */
+// </nowiki>
 })(oRepLinks);
