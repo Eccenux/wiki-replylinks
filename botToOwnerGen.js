@@ -1,3 +1,5 @@
+/* eslint-env es6 */
+/* global copy */
 /**
  * Pobieranie listy botów.
  * 

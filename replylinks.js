@@ -1,5 +1,4 @@
 /* global ve */
-/* eslint-disable indent */
 /**
 	@file Odpowiedzi z linkami (Reply links with backtrack links)
 	v{version}
@@ -237,7 +236,7 @@ $G.autoNewSectionInit = function()
 $G.setupPostSave = function(textbox)
 {
 	textbox = document.getElementById('wpTextbox1');
-	summary = document.querySelector('#wpSummary');
+	var summary = document.querySelector('#wpSummary');
 	if (!textbox || !summary) {
 		console.error('[replylinks]', 'setupPostSave failed');
 		return;
@@ -335,12 +334,10 @@ $G.addSub = function(pageTitle, sectionTitle, commentname)
 {
 	new mw.Api().postWithEditToken( {
 		action: 'discussiontoolssubscribe',
-		//format : `json`,
-		formatversion : `2`,
-		//uselang : `pl`,
+		formatversion : '2',
 		page : pageTitle + '#' + sectionTitle,
 		commentname : commentname,
-		subscribe : `true`,
+		subscribe : 'true',
 	} );
 };
 

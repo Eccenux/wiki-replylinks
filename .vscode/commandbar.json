@@ -10,7 +10,7 @@
 			"tooltip": "Run build and deploy for staging.",
 			"color": "lightgreen",
 			"commandType": "exec",
-			"command": "node wikiploy-dev.js",
+			"command": "node wikiploy-dev.mjs",
 			"priority": 0
 		},
 		{
@@ -18,7 +18,7 @@
 			"tooltip": "Run build and deploy as a gadget.",
 			"color": "lightgreen",
 			"commandType": "exec",
-			"command": "node wikiploy.js",
+			"command": "node wikiploy.mjs",
 			"priority": 0
 		},
 		{

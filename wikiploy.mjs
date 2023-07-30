@@ -1,9 +1,9 @@
 /**
- * Dev/staging deploy.
+ * Deploy as a gadget.
  */
 import {DeployConfig, WikiployLite} from 'wikiploy';
 import {version, info} from './version.mjs';
-import { build_js } from './build.js';
+import { build_js } from './build.mjs';
 
 import * as botpass from './bot.config.mjs';
 const ployBot = new WikiployLite(botpass);
@@ -21,6 +21,7 @@ ployBot.summary = () => {
 	const configs = [];
 	configs.push(new DeployConfig({
 		src: 'replylinks.dev.js',
+		dst: 'MediaWiki:Gadget-replylinks.js',
 	}));
 	await ployBot.deploy(configs);
 })().catch(err => {
