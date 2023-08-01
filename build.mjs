@@ -12,6 +12,7 @@ export async function build_js() {
 	];
 	const includes = [
 		'bots.plwiki.js',
+		'UserConfig.js',
 	];
 
 	// merge main JS
@@ -50,7 +51,7 @@ function readFileUtf(file) {
  */
 function includeFiles(files, js) {
 	// replace: /*$inc{some.file.js}*/
-	return js.replace(/\/\*[ \t]*\$inc\{([^}]+)\}[ \t]*\*\//, (a, name)=>{
+	return js.replace(/\/\*[ \t]*\$inc\{([^}]+)\}[ \t]*\*\//g, (a, name)=>{
 		if (files.indexOf(name) < 0) {
 			console.warn('Unknown name: %s.', name);
 			return a;

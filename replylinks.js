@@ -1,4 +1,3 @@
-/* global ve */
 /**
 	@file Odpowiedzi z linkami (Reply links with backtrack links)
 	v{version}
@@ -85,6 +84,28 @@ if ($G.getMediaWikiConfig('wgUserLanguage') in $G.i18n)
 }
 $G.i18n = $G.i18n[$G.Lang];
 
+/** Configurable by users. */
+$G.options = {
+	boolAddSignature: true,
+};
+
+/**
+ * Prepare options from user config.
+ * @param {UserConfig} userConfig 
+ */
+$G.prepareConfig = async function (userConfig) {
+	await userConfig.register();
+
+	const userOptions = [
+		'boolAddSignature',
+	];
+	for (const option of userOptions) {
+		let value = userConfig.get(option);
+		this.options[option] = value;
+	}
+	mw.hook('userjs.replylinks.configReady').fire();
+},
+
 /**
 	@brief get all alternative namespaces for given \a namespaceNumber.
 
@@ -123,6 +144,8 @@ $G.strBaseUserTalkURL     = $G.getMediaWikiConfig('wgServer') + $G.getMediaWikiC
 
 /*$inc{bots.plwiki.js}*/
 
+/*$inc{UserConfig.js}*/
+
 /**
  * Get data "sent" from previous page.
  * 
@@ -158,18 +181,6 @@ $G.autoNewSectionData = function()
 };
 
 /**
- * 
- * @param {String} content 
- * @private
- */
-$G.vePrependContent = function(content) {
-	var rangeToReplace = new ve.Range(0),
-		surfaceModel = ve.init.target.getSurface().getModel(),
-		fragment = surfaceModel.getLinearFragment(rangeToReplace);
-	fragment.insertContent(content);
-};
-
-/**
 	@brief Inserting new section name and some info from the location string param.
 
 	@note newsectionname url param used
@@ -183,28 +194,6 @@ $G.autoNewSectionInit = function()
 	}
 
 	//
-	// Discussion tools editor (VE)
-	//
-	// (restoring changes brakes this; plus prepending content adds nowiki tags in visual model...)
-	/**
-	var discussionToolsContainer = document.querySelector('.ext-discussiontools-ui-newTopic');
-	if (discussionToolsContainer)
-	{
-		var titleEl = discussionToolsContainer.querySelector('.oo-ui-fieldLayout-field input');
-		if (titleEl) {
-			titleEl.value = data.title;
-		}
-		if (mw && mw.loader) {
-			mw.loader.using( 'ext.visualEditor.desktopArticleTarget.init' ).then( function() {
-				console.log('[replylinks] ve desktopArticleTarget init');
-				$G.vePrependContent(data.content);
-			});
-		}
-		return;
-	}
-	/**/
-
-	//
 	// Standard new-section form
 	//
 	var elInput = document.getElementById('wpTextbox1');
@@ -213,8 +202,9 @@ $G.autoNewSectionInit = function()
 		// section content (link)
 		if (data.content.length > 0)
 		{
+			let content = (this.options.boolAddSignature) ? data.content + '\n--'+'~'+'~'+'~'+'~' : data.content;
 			// link + signature
-			elInput.value = data.content + '\n\n--'+'~'+'~'+'~'+'~';
+			elInput.value = content;
 		}
 
 		// setup post-save action(s)
@@ -627,6 +617,12 @@ $G.getElementsByTagNames = function (list, obj)
 	return resultArray;
 };
 
+// gConfig init
+mw.hook('userjs.gConfig.ready').add(function (gConfig) {
+	let userConfig = new UserConfig(gConfig);
+	$G.prepareConfig(userConfig)
+});
+
 //
 // Init
 //
@@ -637,7 +633,11 @@ $G.getElementsByTagNames = function (list, obj)
 if (location.search.indexOf('newsectionname=') > 0 
 	&& $G.getMediaWikiConfig('wgCanonicalNamespace')=='User_talk')
 {
-	$($G.autoNewSectionInit);
+	$(function(){
+		mw.hook('userjs.replylinks.configReady').add(function(){
+			$G.autoNewSectionInit();
+		});
+	});
 }
 // add links
 if ($G.getMediaWikiConfig('wgAction')!='edit' 
