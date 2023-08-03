@@ -247,7 +247,7 @@ $G.prepareSub = function(summary)
 	// also save "relevant" user name
 	state.user = $G.getMediaWikiConfig('wgRelevantUserName');
 	$G.saveState(state);
-}
+};
 
 /**
  * Max deltaT between submit and load [s].
@@ -283,7 +283,7 @@ $G.checkSub = function()
 	// if OK => subscribe; remove state
 	$G.addSub(sub.pageTitle, sub.sectionTitle, sub.commentname);
 	$G.removeState();
-}
+};
 
 /** @private Find subscription data. */
 $G.findSub = function()
@@ -350,7 +350,7 @@ $G.saveState = function(state)
 {
 	console.log('[replylinks]', 'saveState', state);
 	localStorage.setItem($G._stateKey, JSON.stringify(state));
-}
+};
 /** @private Read post-form state. */
 $G.readState = function()
 {
@@ -358,12 +358,12 @@ $G.readState = function()
 	var state = JSON.parse(rawState);
 	console.log('[replylinks]', 'readState', state);
 	return state;
-}
+};
 /** @private Clear post-form state. */
 $G.removeState = function()
 {
 	localStorage.removeItem($G._stateKey);
-}
+};
 
 /**
 	@brief Adding reply links near user links.
@@ -610,17 +610,17 @@ $G.getElementsByTagNames = function (list, obj)
 {
 	// for some reason sourceIndex doesn't work in Opera when NOT in debug mode (returns -1)...
 	// so we use jQuery...
-	var resultArray = new Array();
+	var resultArray = [];
 	$(list, obj).each(function(){
 		resultArray.push(this);
-	})
+	});
 	return resultArray;
 };
 
 // gConfig init
 mw.hook('userjs.gConfig.ready').add(function (gConfig) {
 	let userConfig = new UserConfig(gConfig);
-	$G.prepareConfig(userConfig)
+	$G.prepareConfig(userConfig);
 });
 
 //
