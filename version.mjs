@@ -1,4 +1,4 @@
-let version = '1.9.1';
+let version = '1.10.0';
 let info = 'Optional signature; fix';
 export {
 	version,
