@@ -84,7 +84,7 @@ if ($G.getMediaWikiConfig('wgUserLanguage') in $G.i18n)
 }
 $G.i18n = $G.i18n[$G.Lang];
 
-/** Configurable by users. */
+/** Configurable by users (and default when `gConfig` is not available). */
 $G.options = {
 	boolAddSignature: true,
 };
@@ -620,7 +620,7 @@ $G.getElementsByTagNames = function (list, obj)
 // gConfig init
 mw.hook('userjs.gConfig.ready').add(function (gConfig) {
 	let userConfig = new UserConfig(gConfig);
-	$G.prepareConfig(userConfig);
+	$G.prepareConfig(userConfig); // fires 'userjs.replylinks.configReady'
 });
 
 //
@@ -634,10 +634,12 @@ if (location.search.indexOf('newsectionname=') > 0
 	&& $G.getMediaWikiConfig('wgCanonicalNamespace')=='User_talk')
 {
 	$.when($.ready, mw.loader.using('jquery.textSelection')).done(function () {
+		// init after config if gConfig is available
 		if (mw.loader.getState('ext.gadget.gConfig') !== null) {
 			mw.hook('userjs.replylinks.configReady').add(function(){
 				$G.autoNewSectionInit();
 			});
+		// init directly using default config
 		} else {
 			$G.autoNewSectionInit();
 		}
