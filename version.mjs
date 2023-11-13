@@ -1,5 +1,5 @@
-let version = '1.9.1';
-let info = 'Optional signature; fix';
+let version = '1.10.0';
+let info = `Don't hard-depend on gConfig, support CodeEditor`;
 export {
 	version,
 	info,

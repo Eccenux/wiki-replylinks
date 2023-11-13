@@ -43,7 +43,7 @@ oRepLinks.version = oRepLinks.ver = '{version}';
 // i18n
 oRepLinks.i18n = {'':''
 	,'en' : {'':''
-		,'std prefix'        : 'Re:'   // standard prefix to a replay
+		,'std prefix'        : 'Re:'   // standard prefix to a reply
 		,'no section prefix' : 'Ad:'   // prefix shown when a section header was not found
 		,'reply link text'   : 'reply'
 	}
@@ -84,7 +84,7 @@ if ($G.getMediaWikiConfig('wgUserLanguage') in $G.i18n)
 }
 $G.i18n = $G.i18n[$G.Lang];
 
-/** Configurable by users. */
+/** Configurable by users (and default when `gConfig` is not available). */
 $G.options = {
 	boolAddSignature: true,
 };
@@ -204,7 +204,7 @@ $G.autoNewSectionInit = function()
 		{
 			let content = (this.options.boolAddSignature) ? data.content + '\n--'+'~'+'~'+'~'+'~' : data.content;
 			// link + signature
-			elInput.value = content;
+			$(elInput).textSelection('setContents', content);
 		}
 
 		// setup post-save action(s)
@@ -620,7 +620,7 @@ $G.getElementsByTagNames = function (list, obj)
 // gConfig init
 mw.hook('userjs.gConfig.ready').add(function (gConfig) {
 	let userConfig = new UserConfig(gConfig);
-	$G.prepareConfig(userConfig);
+	$G.prepareConfig(userConfig); // fires 'userjs.replylinks.configReady'
 });
 
 //
@@ -633,10 +633,16 @@ mw.hook('userjs.gConfig.ready').add(function (gConfig) {
 if (location.search.indexOf('newsectionname=') > 0 
 	&& $G.getMediaWikiConfig('wgCanonicalNamespace')=='User_talk')
 {
-	$(function(){
-		mw.hook('userjs.replylinks.configReady').add(function(){
+	$.when($.ready, mw.loader.using('jquery.textSelection')).done(function () {
+		// init after config if gConfig is available
+		if (mw.loader.getState('ext.gadget.gConfig') !== null) {
+			mw.hook('userjs.replylinks.configReady').add(function(){
+				$G.autoNewSectionInit();
+			});
+		// init directly using default config
+		} else {
 			$G.autoNewSectionInit();
-		});
+		}
 	});
 }
 // add links
