@@ -16,10 +16,8 @@
     "url": "https://github.com/Eccenux/wiki-replylinks/issues"
   },
   "homepage": "https://github.com/Eccenux/wiki-replylinks#readme",
-  "dependencies": {
-    "wikiploy": "1.x"
-  },
   "devDependencies": {
-    "eslint": "8.x"
+    "eslint": "8.x",
+    "wikiploy": "2.x"
   }
 }
