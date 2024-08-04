@@ -9,7 +9,7 @@
 		- adding reply links near user links
 		- inserting text given in newsectionname (as PHP param in the location string of the page)
 
-    Copyright:  ©2006-2023 Maciej Jaros (pl:User:Nux, en:User:EcceNux)
+    Copyright:  ©2006-2024 Maciej Jaros (pl:User:Nux, en:User:EcceNux)
      Licencja:  GNU General Public License v2
                 http://opensource.org/licenses/gpl-license.php
 
@@ -54,7 +54,7 @@ oRepLinks.i18n = {'':''
 	}
 };
 // IP will be added to the end to create a working link
-oRepLinks.hrefOnlineIPwhois = 'http://www.ripe.net/perl/whois?form_type=simple&searchtext=';
+oRepLinks.hrefOnlineIPwhois = 'https://whois.toolforge.org/gateway.py?lookup=true&ip=';
 
 /* -=-=-=-=-=-=-=-=-=-=-=-
 	Gadget code
@@ -404,37 +404,44 @@ $G.addReplyLinks = function()
 	var reHrefNew = new RegExp ($G.strReHrefNewBase + "([^/?&]*)", "i");	// with ignore case
 	var reHrefAnonim = new RegExp ($G.strReHrefAnonimBase + "([\\.0-9]*|[0-9a-f]*:[0-9a-f:]+)$", 'i');
 
-	var content = document.getElementById('content');
-	if (!content)
-	{
-		content = document.getElementById('mw_content');	// moder skin
-		if (!content)
-		{
-			return;
-		}
-	}
-	var bodyContent_id = 'bodyContent';
-	var bodyContent = document.getElementById(bodyContent_id);
+	//
+	// main container for content (also for diff meta-data, history listing)
+	var bodyContent = document.querySelector('#bodyContent,#mw_contentholder');
 	if (!bodyContent)
 	{
-		bodyContent = document.getElementById('mw_contentholder');	// moder skin
+		console.warn('[replylinks]', 'bodyContent not found, skipping');
+		return;
 	}
 
 	//
 	// first header as a default section
 	var secAbove = {
-		'id' : bodyContent_id,	// for link hash
+		'id' : bodyContent.id,	// for link hash
 		'text' : $G.parseSectionText($G.getMediaWikiConfig('wgPageName')).replace(/_/g, ' ')	// for display
 	};
 	var secReplyText = $G.i18n['no section prefix'];
 	//
-	// in search for links... and sections
-	var a = $G.getElementsByTagNames ('A,SPAN', bodyContent);
+	// in search for links... and section headers
+	//var a = $G.getElementsByTagNames ('A,SPAN', bodyContent);
+	var a = Array.from(bodyContent.querySelectorAll(':is(h1,h2,h3,h4)[id],a[href*=":"]'));
 	for (var i = 0; i < a.length; i++)
 	{
+		var nodeName = a[i].nodeName.toLowerCase();
+		var currentNode = a[i];
+		
 		//
-		// checking if this is a user link
-		if (a[i].nodeName.toLowerCase()=='a' && a[i].href != '' && a[i].getAttribute('href').indexOf('#')==-1)
+		// section setup
+		if (nodeName.indexOf('h') === 0) // hX
+		{
+			secAbove.id = currentNode.id;
+			// sometimes there could be a link in the header (maybe some more)
+			secAbove.text = $G.stripSectionNumbering($G.parseSectionText(currentNode.innerHTML), secAbove.id);
+			continue;
+		}
+		
+		//
+		// add a reply if this is a user link (also adds whois link to anons)
+		if (nodeName == 'a' && a[i].href != '' && a[i].getAttribute('href').indexOf('#')==-1)
 		{
 			var anonimous = false;
 			var matches = (a[i].className.indexOf('new')>=0) ? reHrefNew.exec(a[i].href) : reHref.exec(a[i].href);
@@ -462,7 +469,7 @@ $G.addReplyLinks = function()
 				hrefReply += '&newsectionname=' + encodeURIComponent(newSectionName);
 				var newEl = document.createElement('small');
 				var newA = document.createElement('a');
-				newA.className='gadget-replylinks-reply';
+				newA.className = 'gadget-replylinks-reply';
 				newA.setAttribute('href', hrefReply);
 				newA.setAttribute('title', $G.i18n['std prefix']+secAbove.text);
 				newA.appendChild(document.createTextNode('['+$G.i18n['reply link text']+']'));
@@ -473,55 +480,18 @@ $G.addReplyLinks = function()
 				if (anonimous)
 				{
 					newA = document.createElement('a');
+					newA.className = 'gadget-replylinks-whois';
 					newA.setAttribute('href', $G.hrefOnlineIPwhois+matches[1]);
 					newA.setAttribute('title', 'IP whois');
-					newA.appendChild(document.createTextNode('[?]'));
+					newA.setAttribute('target', '_blank');
+					newA.setAttribute('rel', 'noopener noreferrer');
+					newA.appendChild(document.createTextNode('[ip?]'));
 					newEl.appendChild(newA); // appending to previously created
 					//i++;	// a is a dynamic list
 				}
 			}
 		}
 
-		//
-		// a little hunt for sections (anchor and text of the section above user links
-		if (a[i].nodeName.toLowerCase()=='a' && $G.getMediaWikiConfig('wgNamespaceNumber') != 6 && a[i].id != '' && a[i].parentNode.nodeName=='P') // skip obtaining headers on image pages and non-header links
-		{
-			var header = a[i].parentNode;
-			// moving forward in search for the header
-			var found;
-			for (found=3; found; found--)	// max 3 forward
-			{
-				if (!(header instanceof Element)) {
-					found = false;
-					break;
-				}
-				header = header.nextSibling;
-				if (header!=null && header.nodeType==document.ELEMENT_NODE && header.nodeName.search(/h[0-9]/i)==0)
-				{
-					break;
-				}
-			}
-			if (found)
-			{
-				secAbove.id = a[i].id;
-				// sometimes there could be a link in the header (maybe some more)
-				secAbove.text = $G.stripSectionNumbering($G.parseSectionText(header.innerHTML), secAbove.id);
-				// should be set only once (as it is always the same), but let's leave it that way
-				secReplyText = $G.i18n['std prefix'];
-				//header.innerHTML = '['+secAbove.id+'@'+found+']&rarr;'+secAbove.text;
-			}
-		}
-		//
-		// vector style sections
-		if (a[i].className=='mw-headline')
-		{
-			secAbove.id = a[i].id;
-			// sometimes there could be a link in the header (maybe some more)
-			secAbove.text = $G.stripSectionNumbering($G.parseSectionText(a[i].innerHTML), secAbove.id);
-			// should be set only once (as it is always the same), but let's leave it that way
-			secReplyText = $G.i18n['std prefix'];
-			//header.innerHTML = '['+secAbove.id+'@'+found+']&rarr;'+secAbove.text;
-		}
 	}
 };
 
@@ -595,27 +565,6 @@ $G.stripSectionNumbering= function (sectionText, sectionId)
 	return sectionText;
 };
 
-/**
-	@brief Pobiera elementy o nazwach podanych na liście
-
-	Elementy zwracane są w kolejności występowania w dokumencie.
-
-	@param list
-		CSV list of tag names
-	@param obj [optional]
-		Element wzg. którego pobierać elementy z listy
-		jak w obj.getElementsByTagName('el.name')
-*/
-$G.getElementsByTagNames = function (list, obj)
-{
-	// for some reason sourceIndex doesn't work in Opera when NOT in debug mode (returns -1)...
-	// so we use jQuery...
-	var resultArray = [];
-	$(list, obj).each(function(){
-		resultArray.push(this);
-	});
-	return resultArray;
-};
 
 // gConfig init
 mw.hook('userjs.gConfig.ready').add(function (gConfig) {
