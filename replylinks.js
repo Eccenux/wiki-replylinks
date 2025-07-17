@@ -345,7 +345,7 @@ $G._stateKey = 'userjs.replylinks.sub';
 /** @private Save post-form state. */
 $G.saveState = function(state)
 {
-	console.log('[replylinks]', 'saveState', state);
+	// console.log('[replylinks]', 'saveState', state);
 	localStorage.setItem($G._stateKey, JSON.stringify(state));
 };
 /** @private Read post-form state. */
@@ -353,7 +353,7 @@ $G.readState = function()
 {
 	var rawState = localStorage.getItem($G._stateKey);
 	var state = JSON.parse(rawState);
-	console.log('[replylinks]', 'readState', state);
+	// console.log('[replylinks]', 'readState', state);
 	return state;
 };
 /** @private Clear post-form state. */
@@ -446,7 +446,7 @@ $G.addReplyLinks = function()
 		{
 			let a = el;
 			if (reHrefIsTalk.test(a.href)) {
-				console.log('[replylinks]', 'skip talk:', a.href);
+				// console.log('[replylinks]', 'skip talk:', a.href);
 				continue;
 			}
 			let userName;
@@ -468,11 +468,11 @@ $G.addReplyLinks = function()
 			if ($G.oBotToOwner[userName] != undefined)
 			{
 				userName = $G.oBotToOwner[userName];
-				console.log('[replylinks]', 'bot trans:', a.href, userName);
+				// console.log('[replylinks]', 'bot trans:', a.href, userName);
 			}
-			console.log('[replylinks]', {userName, spPageTarget});
+			// console.log('[replylinks]', {userName, spPageTarget});
 			let parentEl = document.createElement('small');
-			parentEl.className = 'relnk';
+			parentEl.className = 'g-relnks';
 			a.insertAdjacentElement('afterend', parentEl);
 			$G.addReplyEl(parentEl, userName, hrefPermalink, secAbove)
 			// if (ipLink) {
