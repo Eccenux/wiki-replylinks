@@ -1,5 +1,5 @@
-let version = '1.11.1';
-let info = `simplified, modern section hunt concept; whois tweaks`;
+let version = '1.12.0';
+let info = `temp accounts`;
 export {
 	version,
 	info,
