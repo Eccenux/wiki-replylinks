@@ -63,8 +63,8 @@ function includeFiles(files, js) {
 
 /**/
 (async () => {
-	console.log(new Date().toISOString(), 'start');
+	console.log(new Date().toISOString(), 'build start');
 	await build_js();
-	console.log(new Date().toISOString(), 'done');
+	console.log(new Date().toISOString(), 'build done');
 })();
 /**/

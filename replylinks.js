@@ -9,13 +9,10 @@
 		- adding reply links near user links
 		- inserting text given in newsectionname (as PHP param in the location string of the page)
 
-    Copyright:  ©2006-2024 Maciej Jaros (pl:User:Nux, en:User:EcceNux)
+    Copyright:  ©2006-2025 Maciej Jaros (pl:User:Nux, en:User:EcceNux)
      Licencja:  GNU General Public License v2
                 http://opensource.org/licenses/gpl-license.php
 
-	@note Please keep MW 1.16 compatible (i.e. do not use mw.config directly)
-	@note jQuery is required though
-	
 	@note Dev version: http://pl.wikipedia.org/wiki/Wikipedysta:Nux/replylinks.dev.js
 	@note Prod version: https://pl.wikipedia.org/wiki/MediaWiki:Gadget-replylinks.js
 
@@ -348,7 +345,7 @@ $G._stateKey = 'userjs.replylinks.sub';
 /** @private Save post-form state. */
 $G.saveState = function(state)
 {
-	console.log('[replylinks]', 'saveState', state);
+	// console.log('[replylinks]', 'saveState', state);
 	localStorage.setItem($G._stateKey, JSON.stringify(state));
 };
 /** @private Read post-form state. */
@@ -356,7 +353,7 @@ $G.readState = function()
 {
 	var rawState = localStorage.getItem($G._stateKey);
 	var state = JSON.parse(rawState);
-	console.log('[replylinks]', 'readState', state);
+	// console.log('[replylinks]', 'readState', state);
 	return state;
 };
 /** @private Clear post-form state. */
@@ -402,7 +399,8 @@ $G.addReplyLinks = function()
 	// create regexpes for user links
 	var reHref = new RegExp ($G.strReHrefBase + "([^/]*)$", "i");	// with ignore case
 	var reHrefNew = new RegExp ($G.strReHrefNewBase + "([^/?&]*)", "i");	// with ignore case
-	var reHrefAnonim = new RegExp ($G.strReHrefAnonimBase + "([\\.0-9]*|[0-9a-f]*:[0-9a-f:]+)$", 'i');
+	var reHrefAnonim = new RegExp ($G.strReHrefAnonimBase + "(~[0-9a-f-]+|[\\.0-9]*|[0-9a-f]*:[0-9a-f:]+)$", 'i');
+	var reHrefIsTalk = new RegExp ($G.getNamespaceNames(3, encodeURIComponent).join('|'), 'i');
 
 	//
 	// main container for content (also for diff meta-data, history listing)
@@ -419,20 +417,23 @@ $G.addReplyLinks = function()
 		'id' : bodyContent.id,	// for link hash
 		'text' : $G.parseSectionText($G.getMediaWikiConfig('wgPageName')).replace(/_/g, ' ')	// for display
 	};
-	var secReplyText = $G.i18n['no section prefix'];
 	//
 	// in search for links... and section headers
 	//var a = $G.getElementsByTagNames ('A,SPAN', bodyContent);
-	var a = Array.from(bodyContent.querySelectorAll(':is(h1,h2,h3,h4)[id],a[href*=":"]'));
-	for (var i = 0; i < a.length; i++)
+	let els = Array.from(bodyContent.querySelectorAll([
+		':is(h1,h2,h3,h4)[id]', // sections
+		'.mw-parser-output a[href*=":"]', // links in content
+		'a.mw-userlink', // std GUI (history etc)
+	]));
+	for (let el of els)
 	{
-		var nodeName = a[i].nodeName.toLowerCase();
-		var currentNode = a[i];
+		var nodeName = el.nodeName.toLowerCase();
 		
 		//
 		// section setup
 		if (nodeName.indexOf('h') === 0) // hX
 		{
+			let currentNode = el;
 			secAbove.id = currentNode.id;
 			// sometimes there could be a link in the header (maybe some more)
 			secAbove.text = $G.stripSectionNumbering($G.parseSectionText(currentNode.innerHTML), secAbove.id);
@@ -441,78 +442,86 @@ $G.addReplyLinks = function()
 		
 		//
 		// add a reply if this is a user link (also adds whois link to anons)
-		if (nodeName == 'a' && a[i].href != '' && a[i].getAttribute('href').indexOf('#')==-1)
+		if (nodeName == 'a' && el.href != '' && el.getAttribute('href').indexOf('#')==-1)
 		{
-			var anonimous = false;
-			var matches = (a[i].className.indexOf('new')>=0) ? reHrefNew.exec(a[i].href) : reHref.exec(a[i].href);
-			if (!matches)
-			{
-				matches = reHrefAnonim.exec(a[i].href);
-				anonimous = true;
+			let a = el;
+			if (reHrefIsTalk.test(a.href)) {
+				// console.log('[replylinks]', 'skip talk:', a.href);
+				continue;
+			}
+			let userName;
+			let spPageTarget = a.getAttribute('data-mw-target');	// Contributions target
+			if (typeof spPageTarget == 'string') {
+				userName = spPageTarget;
+			} else {
+				let matches = (a.className.indexOf('new')>=0) ? reHrefNew.exec(a.href) : reHref.exec(a.href);
+				if (!matches) {
+					matches = reHrefAnonim.exec(a.href);
+					if (!matches) {
+						console.warn('[replylinks]', 'no match:', a.href);
+						continue;
+					}
+				}
+				userName = matches[1];
 			}
 			// botname translation due to match with nonanonimous link
-			else if ($G.oBotToOwner[matches[1]] != undefined)
+			if ($G.oBotToOwner[userName] != undefined)
 			{
-				matches[1] = $G.oBotToOwner[matches[1]];
+				userName = $G.oBotToOwner[userName];
+				// console.log('[replylinks]', 'bot trans:', a.href, userName);
 			}
-
-			if (matches)
-			{
+			// console.log('[replylinks]', {userName, spPageTarget});
+			let parentEl = document.createElement('small');
+			parentEl.className = 'g-relnks';
+			a.insertAdjacentElement('afterend', parentEl);
+			$G.addReplyEl(parentEl, userName, hrefPermalink, secAbove)
+			// if (ipLink) {
+			// 	$G.addWhoisEl(parentEl, userName);
+			// }
+		}
+	}
+};
+/**
+ * Add reply link.
+ * @param {Element} parentEl Container for repl.
+ * @param {String} userName URL escaped name.
+ * @param {String} hrefPermalink Link with some version.
+ * @param {Object} secAbove Section data (header before the link).
+ */
+$G.addReplyEl = function(parentEl, userName, hrefPermalink, secAbove)
+{
+				let secReplyText = $G.i18n['no section prefix'];
 				//
 				// creating reply href
-				// var userName = matches[1];
-				var hrefReply = $G.strBaseUserTalkURL + matches[1] + '?action=edit&section=new';
+				var hrefReply = $G.strBaseUserTalkURL + userName + '?action=edit&section=new';
 				//
 				// and now to create and add data for the new reply section name
 				var newSectionName = '['+hrefPermalink+'#'+secAbove.id+' '+secReplyText+secAbove.text+']';
 				hrefReply += '&dtenable=0';	// disable dicussion tools
 				hrefReply += '&newsectionname=' + encodeURIComponent(newSectionName);
-				var newEl = document.createElement('small');
 				var newA = document.createElement('a');
 				newA.className = 'gadget-replylinks-reply';
 				newA.setAttribute('href', hrefReply);
 				newA.setAttribute('title', $G.i18n['std prefix']+secAbove.text);
 				newA.appendChild(document.createTextNode('['+$G.i18n['reply link text']+']'));
-				newEl.appendChild(newA);
-				$G.insertAfterGivenElement(a[i],newEl);
-
-				// Anonimous whois checker
-				if (anonimous)
-				{
-					newA = document.createElement('a');
+				parentEl.appendChild(newA);
+};
+/**
+ * Add whois link for anons.
+ * @param {Element} parentEl Container for repl.
+ * @param {String} ip URL escaped IP.
+ */
+$G.addWhoisEl = function(parentEl, ip)
+{
+					// Anonimous whois checker
+					let newA = document.createElement('a');
 					newA.className = 'gadget-replylinks-whois';
-					newA.setAttribute('href', $G.hrefOnlineIPwhois+matches[1]);
+					newA.setAttribute('href', $G.hrefOnlineIPwhois+ip);
 					newA.setAttribute('title', 'IP whois');
 					newA.setAttribute('target', '_blank');
 					newA.setAttribute('rel', 'noopener noreferrer');
 					newA.appendChild(document.createTextNode('[ip?]'));
-					newEl.appendChild(newA); // appending to previously created
-					//i++;	// a is a dynamic list
-				}
-			}
-		}
-
-	}
-};
-
-/**
-	@brief Inserting \a newEl element after given \a el element.
-
-	@param el
-		Element object to insert after
-	@param newEl
-		(new) element object to insert
-\* ===================================================== */
-$G.insertAfterGivenElement = function (el, newEl)
-{
-	if (el.nextSibling)
-	{
-		el.parentNode.insertBefore(newEl, el.nextSibling);
-	}
-	else
-	{
-		el.parentNode.appendChild(newEl);
-	}
+					parentEl.appendChild(newA); // appending to previously created
 };
 
 /**
