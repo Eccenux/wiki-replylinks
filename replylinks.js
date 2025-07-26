@@ -458,7 +458,8 @@ $G.addReplyLinks = function()
 				if (!matches) {
 					matches = reHrefAnonim.exec(a.href);
 					if (!matches) {
-						console.warn('[replylinks]', 'no match:', a.href);
+						// this is quite common on pages like https://pl.wikipedia.org/wiki/Wikipedia:Poczekalnia/artyku%C5%82y
+						//console.warn('[replylinks]', 'no match:', a.href);
 						continue;
 					}
 				}
