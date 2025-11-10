@@ -53,6 +53,9 @@ oRepLinks.i18n = {'':''
 // IP will be added to the end to create a working link
 oRepLinks.hrefOnlineIPwhois = 'https://whois.toolforge.org/gateway.py?lookup=true&ip=';
 
+// debug (verbose)
+oRepLinks.debug = false;
+
 /* -=-=-=-=-=-=-=-=-=-=-=-
 	Gadget code
 	$G = oRepLinks
@@ -243,6 +246,7 @@ $G.prepareSub = function(summary)
 	state.time = (new Date()).getTime();
 	// also save "relevant" user name
 	state.user = $G.getMediaWikiConfig('wgRelevantUserName');
+	if ($G.debug) console.log('[replylinks] prepareSub', JSON.stringify(state));
 	$G.saveState(state);
 };
 
@@ -255,10 +259,12 @@ $G.maxValidTime = 60;
 $G.checkSub = function()
 {
 	var state = $G.readState();
+	if ($G.debug) console.log('[replylinks] checkSub', state ? JSON.stringify(state) : 'nn');
 	// basic state validation
 	if (!(state && typeof state === 'object' && state.title)) {
 		return;
 	}
+	var now = (new Date()).getTime();
 	// check for subscription data
 	var sub = $G.findSub();
 	if (!sub) {
@@ -270,7 +276,6 @@ $G.checkSub = function()
 		return;
 	}
 	// if now()-time > maxtime => remove state
-	var now = (new Date()).getTime();
 	var deltaT = Math.round((now - state.time) / 1000);
 	if (deltaT > $G.maxValidTime) {
 		$G.removeState();
@@ -278,11 +283,12 @@ $G.checkSub = function()
 		return;
 	}
 	// if OK => subscribe; remove state
+	if ($G.debug) console.log('[replylinks] subscribe attempt; now()-time: %d [s]', deltaT);
 	$G.addSub(sub.pageTitle, sub.sectionTitle, sub.commentname);
 	$G.removeState();
 };
 
-/** @private Find subscription data. */
+/** @private Find subscription data (finds last section and in that thread data; works best on freshly saved page). */
 $G.findSub = function()
 {
 	// check for subscription links first (or sub placeholders)
@@ -299,7 +305,8 @@ $G.findSub = function()
 	if (!section) {
 		return false;
 	}
-	var h = section.querySelector('.mw-headline');
+	// expect something like: <h2 id="Ad:Wikipedysta:Nux/test_7" data-mw-thread-id="h-Ad:Wikipedysta:Nux/test_7-20251110213500">...</h2>
+	var h = section.querySelector('[data-mw-thread-id]');
 	if (!h) {
 		return false;
 	}
@@ -310,8 +317,8 @@ $G.findSub = function()
 	return {pageTitle:pageTitle, sectionTitle:sectionTitle, commentname:commentname};
 };
 
-/** @private Add subscription. */
 /**
+ * @private Add subscription.
  * 
  * @param {String} pageTitle 
  * @param {String} sectionTitle Not encoded. E.g. "Odp:Próba wiadoma 3"
@@ -319,6 +326,7 @@ $G.findSub = function()
  */
 $G.addSub = function(pageTitle, sectionTitle, commentname)
 {
+	if ($G.debug) console.log('[replylinks] addSub (pt, st, name)', pageTitle, sectionTitle, commentname);
 	new mw.Api().postWithEditToken( {
 		action: 'discussiontoolssubscribe',
 		formatversion : '2',

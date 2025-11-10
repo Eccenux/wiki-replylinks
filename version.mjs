@@ -1,5 +1,5 @@
-let version = '1.12.0';
-let info = `temp accounts`;
+let version = '1.12.1';
+let info = `subs fix`;
 export {
 	version,
 	info,
