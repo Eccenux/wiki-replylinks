@@ -23,6 +23,11 @@ ployBot.summary = () => {
 		src: 'replylinks.dev.js',
 		dst: 'MediaWiki:Gadget-replylinks.js',
 	}));
+	configs.push(new DeployConfig({
+		src: 'replylinks.dev.js',
+		dst: 'User:Nux/replylinks.js',
+		site: "en.wikipedia.org",
+	}));
 	await ployBot.deploy(configs);
 })().catch(err => {
 	console.error(err);
