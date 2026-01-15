@@ -387,16 +387,27 @@ $G.addReplyLinks = function()
 	//
 	// Get viewed page version link (may be something in history)
 	//
-	var hrefPermalink;
-	// this one means it is a perma link (comparing versions, showing one specfic version and such)
-	if (document.location.href.indexOf('&oldid=')!=-1)
+	let hrefPermalink;
 	{
-		hrefPermalink = document.location.href.replace(/#.+$/,'');
-	}
-	// get latest
-	else
-	{
-		hrefPermalink = '{{fullurl:' + $G.getMediaWikiConfig('wgPageName') + '|oldid=' + $G.getMediaWikiConfig('wgCurRevisionId') + '}}';
+		let currentUrl = document.location.href.replace(/#.+/, '');
+		let currentId = $G.getMediaWikiConfig('wgCurRevisionId');
+
+		// means it is a permalink (comparing versions, showing one specific version or a diff.)
+		if (/[?&]oldid=/.test(currentUrl))
+		{
+			// diff=cur is fluid, replace to static
+			if (currentUrl.includes('diff=cur'))
+			{
+				currentUrl = currentUrl.replace(/([?&])diff=cur(?=[&]|$)/, `$1diff=${currentId}`);
+			}
+			hrefPermalink = currentUrl;
+		}
+		// get latest
+		else
+		{
+			let pageTitle = $G.getMediaWikiConfig('wgPageName');
+			hrefPermalink = `{{fullurl:${pageTitle}|oldid=${currentId}}}`;
+		}
 	}
 
 	//
