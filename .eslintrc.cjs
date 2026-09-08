@@ -11,7 +11,7 @@ module.exports = {
 	},
 	"extends": "eslint:recommended",
 	"parserOptions": {
-		"ecmaVersion": 11,
+		"ecmaVersion": 2019,
 		"sourceType": "module"
 	},
 	"rules": {
@@ -20,7 +20,7 @@ module.exports = {
 	"overrides": [{
 		"files": ["**/*.mjs"],
 		"parserOptions": {
-			"ecmaVersion": 11,
+			"ecmaVersion": 2020,
 			"sourceType": "module"
 		},
 	}],
